@@ -1,0 +1,17 @@
+{
+  "id": "nutrition-general-1",
+  "type": "podcast",
+  "title": "Co jeść doktorku? | Czy naturalne zawsze znaczy zdrowe? | Odcinek 1",
+  "url": "https://www.youtube.com/watch?v=GpDRYZhxnkM",
+  "language": "PL",
+  "author": {
+    "name": "Karol Kus Masz To W Lesie",
+    "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+  },
+  "guests": ["Karol Kus", "Jacek Safuta"],  
+  "topics": ["nutrition", "basics", "evolution", "diet"],
+  "series": {
+    "name": "Co jeść doktorku?",
+    "order": 1
+  }
+}

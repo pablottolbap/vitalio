@@ -1,0 +1,17 @@
+ {
+   "id": "folder-file-number",
+   "type": "video/podcast",
+   "title": "title",
+   "url": "https:www.youtube.com/watch?vabc",
+   "language": "PL",
+   "author": {
+     "name": "abc",
+     "channelUrl": "https:www.youtube.com/@abc"
+   },
+   "guests": ["abc", "xyz"],  
+   "topics": ["topic1", "topic2"],
+   "series": {
+     "name": "abc",
+     "order": number
+   }
+ }
