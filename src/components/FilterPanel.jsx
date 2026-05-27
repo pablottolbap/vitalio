@@ -75,7 +75,7 @@ export default function FilterPanel({
       </div>
 
       {/* Grid z 3 kolumnami dla Kanałów, Osób i Serii */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
         
         {/* Dropdown dla Kanałów */}
         <div>

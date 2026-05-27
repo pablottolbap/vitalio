@@ -4,13 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predev": "node scripts/aggregate.js",
     "dev": "vite",
-    "prebuild": "node scripts/aggregate.js",
     "build": "vite build",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",    
-    "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {

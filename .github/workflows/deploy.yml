@@ -1,0 +1,33 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Zmień na 'main' jeśli Twoja główna gałąź tak się nazywa
+    tags:
+      - 'v*.*.*' # Uruchomi się też, gdy wyślesz tag np. v1.0.0, v1.1.2
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 1. Pobranie kodu
+        uses: actions/checkout@v4
+
+      - name: 2. Instalacja środowiska Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 3. Pobranie bibliotek (npm install)
+        run: npm ci
+
+      - name: 4. Budowanie wersji produkcyjnej
+        run: npm run build
+
+      - name: 5. Wypchnięcie na GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist

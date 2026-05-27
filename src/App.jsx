@@ -43,7 +43,7 @@ export default function App() {
       
       {/* LOGO */}
       <header style={{ marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
-        <img src={logo} alt="Logo" style={{ width: '400px', height: 'auto', maxHeight: '250px', objectFit: 'contain' }} />
+        <img src={logo} alt="Logo" style={{ width: '400px', maxWidth: '100%', height: 'auto', maxHeight: '250px', objectFit: 'contain' }} />
       </header>
 
       {/* Główna zawartość + Sidebar */}
@@ -62,7 +62,7 @@ export default function App() {
           />
 
           {/* LISTA MATERIAŁÓW */}
-          <main style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
+          <main style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
             {filteredMaterials.map(item => (
               <VideoCard 
                 key={item.id} 
