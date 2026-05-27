@@ -2,6 +2,7 @@ import { useState } from 'react';
 import rawData from './data.json'; 
 import FilterPanel from './components/FilterPanel';
 import VideoCard from './components/VideoCard';
+import logo from './assets/logo.png';
 
 export default function App() {
   const [activeChannel, setActiveChannel] = useState(null);
@@ -42,7 +43,7 @@ export default function App() {
       
       {/* LOGO */}
       <header style={{ marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
-        <img src="/src/logo.png" alt="Logo" style={{ width: '400px', height: 'auto', maxHeight: '250px', objectFit: 'contain' }} />
+        <img src={logo} alt="Logo" style={{ width: '400px', height: 'auto', maxHeight: '250px', objectFit: 'contain' }} />
       </header>
 
       {/* Główna zawartość + Sidebar */}
