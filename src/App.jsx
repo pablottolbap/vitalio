@@ -1,14 +1,32 @@
-import { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import rawData from './data.json'; 
 import FilterPanel from './components/FilterPanel';
 import VideoCard from './components/VideoCard';
 import logo from './assets/logo.png';
 
 export default function App() {
+  const searchParams = new URLSearchParams(window.location.search);
   const [activeChannel, setActiveChannel] = useState(null);
   const [activePerson, setActivePerson] = useState(null);
   const [activeTopic, setActiveTopic] = useState(null);
   const [activeSeries, setActiveSeries] = useState(null);
+
+  const [visibleCount, setVisibleCount] = useState(10);
+  const observerRef = useRef(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (activeTopic) params.set('topic', activeTopic);
+    if (activeChannel) params.set('channel', activeChannel);
+    if (activePerson) params.set('person', activePerson);
+    if (activeSeries) params.set('series', activeSeries); 
+    const newQuery = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    window.history.replaceState(null, '', newQuery);
+  }, [activeTopic, activeChannel, activePerson, activeSeries]);
+
+  useEffect(() => {
+    setVisibleCount(10);
+  }, [activeTopic, activeChannel, activePerson, activeSeries]);
 
   const uniqueChannels = [...new Set(rawData.map(item => item.author.name))]
     .sort((a, b) => a.localeCompare(b));
@@ -16,7 +34,7 @@ export default function App() {
   const uniquePeople = [...new Set(rawData.flatMap(item => item.guests || []).filter(Boolean))]
     .sort((a, b) => a.localeCompare(b));
 
-  const uniqueSeries = [...new Set(rawData.map(i => i.series?.name).filter(Boolean))].sort();    
+  const uniqueSeries = [...new Set(rawData.map(i => i.series?.name).filter(Boolean))].sort();
 
   const uniqueTopics = [...new Set(rawData.flatMap(item => item.topics || []).filter(Boolean))]
     .sort((a, b) => a.localeCompare(b));
@@ -34,8 +52,21 @@ export default function App() {
       return true;
   });
 
-  const getPersonDisplayName = (person) => uniqueChannels.includes(person) ? `${person}` : person;
-  const getChannelDisplayName = (channel) => uniquePeople.includes(channel) ? `${channel} (channel)` : channel;
+  const displayedMaterials = filteredMaterials.slice(0, visibleCount);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.isIntersecting && visibleCount < filteredMaterials.length) {
+        setVisibleCount(prevCount => prevCount + 10);
+      }
+    }, { threshold: 1.0 });
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [visibleCount, filteredMaterials.length]);
   const handleClearAll = () => { setActiveChannel(null); setActivePerson(null); setActiveTopic(null); setActiveSeries(null);};
 
   return (
@@ -57,7 +88,7 @@ export default function App() {
             uniqueChannels={uniqueChannels} activeChannel={activeChannel} setActiveChannel={setActiveChannel}
             uniquePeople={uniquePeople} activePerson={activePerson} setActivePerson={setActivePerson}
             uniqueSeries={uniqueSeries} activeSeries={activeSeries} setActiveSeries={setActiveSeries}
-            getChannelDisplayName={getChannelDisplayName} getPersonDisplayName={getPersonDisplayName}
+            getChannelDisplayName={(c) => c} getPersonDisplayName={(p) => p}
             onClearAll={handleClearAll}
           />
 
