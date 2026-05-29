@@ -237,6 +237,7 @@ export default function ContributionForm({ open, onClose }) {
                 <select value={form.type} onChange={set('type')} style={inputStyle}>
                   <option value="video">🎥 video</option>
                   <option value="podcast">🎙️ podcast</option>
+                  <option value="qa">🙋 Q&A</option>
                 </select>
               </div>
               <div style={fieldStyle}>

@@ -13,7 +13,7 @@ export default function VideoCard({ item, onChannelClick, onPersonClick, onTopic
     <div style={{ border: `1px solid ${theme.border}`, padding: '15px', borderRadius: '8px', background: theme.card }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
         <h2 style={{ marginTop: 0 }}>
-          {item.type === 'podcast' ? '🎙️' : '🎥'} <a href={item.url} target="_blank" rel="noreferrer" style={{ color: theme.text }}>{item.title}</a>
+          {item.type === 'podcast' ? '🎙️' : item.type === 'qa' ? '🙋' : '🎥'} <a href={item.url} target="_blank" rel="noreferrer" style={{ color: theme.text }}>{item.title}</a>
         </h2>
 
         {item.language && (
