@@ -3,30 +3,46 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Zmień na 'main' jeśli Twoja główna gałąź tak się nazywa
+      - main
     tags:
-      - 'v*.*.*' # Uruchomi się też, gdy wyślesz tag np. v1.0.0, v1.1.2
+      - 'v*.*.*'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: 1. Pobranie kodu
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 2. Instalacja środowiska Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: 3. Pobranie bibliotek (npm install)
+      - name: Install dependencies
         run: npm ci
 
-      - name: 4. Budowanie wersji produkcyjnej
+      - name: Run aggregation script
+        run: node scripts/aggregate.js
+
+      - name: Commit aggregated data if changed
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          if git diff --quiet src/data.json; then
+            echo "No changes to src/data.json"
+          else
+            echo "Changes detected, committing..."
+            git add src/data.json
+            git commit -m "update aggregated data [skip ci]"
+            git push
+          fi
+
+      - name: Build production version
         run: npm run build
 
-      - name: 5. Wypchnięcie na GitHub Pages
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
