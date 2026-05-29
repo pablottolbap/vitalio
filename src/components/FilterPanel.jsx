@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
 import Select from 'react-select';
+import { useLanguage } from '../i18n.jsx';
+import { useTheme, selectStyles } from '../theme.jsx';
+import { languageName } from '../languages.js';
+import Flag from './Flag';
 
-export default function FilterPanel({ 
+export default function FilterPanel({
   uniqueTopics, activeTopic, setActiveTopic,
   uniqueChannels, activeChannel, setActiveChannel,
   uniquePeople, activePerson, setActivePerson,
   uniqueSeries, activeSeries, setActiveSeries,
+  uniqueLanguages, activeLanguage, setActiveLanguage,
   getChannelDisplayName, getPersonDisplayName,
   onClearAll
 }) {
+  const { t, lang } = useLanguage();
+  const { theme } = useTheme();
+  const rsStyles = selectStyles(theme);
   const [showAllTopics, setShowAllTopics] = useState(false);
 
   const visibleTopics = showAllTopics ? uniqueTopics : uniqueTopics.slice(0, 8);
@@ -28,24 +36,34 @@ export default function FilterPanel({
     label: series
   }));
 
+  const languageToOption = (code) => ({
+    value: code,
+    label: (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+        <Flag code={code} size={18} /> {languageName(code, lang)}
+      </span>
+    )
+  });
+  const languageOptions = (uniqueLanguages || []).map(languageToOption);
+
   return (
-    <section style={{ background: '#f5f5f5', padding: '20px', borderRadius: '8px', marginBottom: '30px' }}>
-      
+    <section style={{ background: theme.panel, padding: '20px', borderRadius: '8px', marginBottom: '30px' }}>
+
       {/* Sekcja Tematów */}
       <div style={{ marginBottom: '20px' }}>
-        <h4 style={{ margin: '0 0 10px 0', fontSize: '0.95em', color: '#555' }}>🏷️ Filter by tag:</h4>
+        <h4 style={{ margin: '0 0 10px 0', fontSize: '0.95em', color: theme.heading }}>🏷️ {t('filterByTag')}</h4>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
           {visibleTopics.map(topic => (
-            <button 
+            <button
               key={topic}
               onClick={() => setActiveTopic(activeTopic === topic ? null : topic)}
               style={{
-                padding: '6px 14px', 
-                borderRadius: '20px', 
-                border: activeTopic === topic ? '2px solid #6f42c1' : '1px solid #ccc', 
+                padding: '6px 14px',
+                borderRadius: '20px',
+                border: activeTopic === topic ? `2px solid ${theme.accent}` : `1px solid ${theme.borderStrong}`,
                 cursor: 'pointer',
-                background: activeTopic === topic ? '#6f42c1' : '#fff',
-                color: activeTopic === topic ? '#FFF' : '#333',
+                background: activeTopic === topic ? theme.accent : theme.card,
+                color: activeTopic === topic ? '#fff' : theme.text,
                 fontSize: '0.85em',
                 fontWeight: activeTopic === topic ? 'bold' : 'normal',
                 transition: 'all 0.2s'
@@ -54,21 +72,21 @@ export default function FilterPanel({
               #{topic}
             </button>
           ))}
-          
+
           {uniqueTopics.length > 8 && (
             <button
               onClick={() => setShowAllTopics(!showAllTopics)}
               style={{
                 background: 'transparent',
                 border: 'none',
-                color: '#007BFF',
+                color: theme.link,
                 cursor: 'pointer',
                 fontSize: '0.85em',
                 textDecoration: 'underline',
                 padding: '6px 10px'
               }}
             >
-              {showAllTopics ? 'Show less' : `+ Show all (${uniqueTopics.length})`}
+              {showAllTopics ? t('showLess') : `+ ${t('showAll')} (${uniqueTopics.length})`}
             </button>
           )}
         </div>
@@ -79,56 +97,73 @@ export default function FilterPanel({
         
         {/* Dropdown dla Kanałów */}
         <div>
-          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: '#555' }}>📺 Filter by channel:</h4>
+          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.heading }}>📺 {t('filterByChannel')}</h4>
           <Select
+            styles={rsStyles}
             options={channelOptions}
-            isClearable={true} 
-            placeholder="Search for a channel..."
+            isClearable={true}
+            placeholder={t('searchChannel')}
             value={activeChannel ? { value: activeChannel, label: getChannelDisplayName(activeChannel) } : null}
             onChange={(selectedOption) => setActiveChannel(selectedOption ? selectedOption.value : null)}
-            noOptionsMessage={() => "Channel not found"}
+            noOptionsMessage={() => t('channelNotFound')}
           />
         </div>
 
         {/* Dropdown dla osób */}
         <div>
-          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: '#555' }}>👤 Filter by person:</h4>
+          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.heading }}>👤 {t('filterByPerson')}</h4>
           <Select
+            styles={rsStyles}
             options={personOptions}
             isClearable={true}
-            placeholder="Enter name and surname..."
+            placeholder={t('searchPerson')}
             value={activePerson ? { value: activePerson, label: getPersonDisplayName(activePerson) } : null}
             onChange={(selectedOption) => setActivePerson(selectedOption ? selectedOption.value : null)}
-            noOptionsMessage={() => "Person not found"}
+            noOptionsMessage={() => t('personNotFound')}
           />
         </div>
 
         {/* Dropdown dla Serii */}
         <div>
-          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: '#555' }}>📚 Filter by series:</h4>
+          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.heading }}>📚 {t('filterBySeries')}</h4>
           <Select
+            styles={rsStyles}
             options={seriesOptions}
             isClearable={true}
-            placeholder="Search for a series..."
+            placeholder={t('searchSeries')}
             value={activeSeries ? { value: activeSeries, label: activeSeries } : null}
             onChange={(selectedOption) => setActiveSeries(selectedOption ? selectedOption.value : null)}
-            noOptionsMessage={() => "Series not found"}
+            noOptionsMessage={() => t('seriesNotFound')}
+          />
+        </div>
+
+        {/* Dropdown dla języka materiału */}
+        <div>
+          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.heading }}>🌐 {t('filterByLanguage')}</h4>
+          <Select
+            styles={rsStyles}
+            options={languageOptions}
+            isClearable={true}
+            placeholder={t('searchLanguage')}
+            value={activeLanguage ? languageToOption(activeLanguage) : null}
+            onChange={(selectedOption) => setActiveLanguage(selectedOption ? selectedOption.value : null)}
+            noOptionsMessage={() => t('languageNotFound')}
           />
         </div>
       </div>
 
-      {/* Przycisk czyszczenia (uwzględnia też activeSeries) */}
-      {(activeChannel || activePerson || activeTopic || activeSeries) && (
-        <div style={{ marginTop: '20px', borderTop: '1px solid #ddd', paddingTop: '15px' }}>
-          <button 
-            onClick={onClearAll} 
-            style={{ 
-              background: '#dc3545', color: 'white', border: 'none', 
+      {/* Przycisk czyszczenia (uwzględnia wszystkie aktywne filtry) */}
+      {(activeChannel || activePerson || activeTopic || activeSeries || activeLanguage) && (
+        <div style={{ marginTop: '20px', borderTop: `1px solid ${theme.border}`, paddingTop: '15px' }}>
+          <button
+            onClick={onClearAll}
+            style={{
+              background: '#dc3545', color: 'white', border: 'none',
               padding: '8px 16px', borderRadius: '4px', cursor: 'pointer',
               fontWeight: 'bold'
             }}
           >
-            ❌ Clear all filters
+            ❌ {t('clearFilters')}
           </button>
         </div>
       )}

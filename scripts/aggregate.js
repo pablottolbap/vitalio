@@ -22,11 +22,14 @@ function getFiles(dir, filesList = []) {
 
 try {
   const allFiles = getFiles(contentDir);
-  
-  // Pobieranie danych z każdego pliku i parsowanie ich
-  const allData = allFiles.map(file => {
+
+  // Pobieranie danych z każdego pliku i parsowanie ich.
+  // Każdy plik to kanał YouTube zawierający tablicę materiałów,
+  // więc spłaszczamy wszystkie tablice do jednej listy.
+  const allData = allFiles.flatMap(file => {
     const rawData = fs.readFileSync(file, 'utf-8');
-    return JSON.parse(rawData);
+    const parsed = JSON.parse(rawData);
+    return Array.isArray(parsed) ? parsed : [parsed];
   });
 
   // Zapis do jednego pliku w folderze src
