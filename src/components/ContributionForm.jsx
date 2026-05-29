@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Turnstile from 'react-turnstile';
+import { Turnstile } from 'react-turnstile';
 import { useLanguage } from '../i18n.jsx';
 import { useTheme } from '../theme.jsx';
 import Flag from './Flag';
