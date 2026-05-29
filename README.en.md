@@ -3,8 +3,7 @@
 </p>
 
 <p align="center">
-  An aggregator and search engine for video materials and podcasts about health, diet and lifestyle.<br>
-  Hosted fully statically on <strong>GitHub Pages</strong>.
+  An aggregator and search engine for video materials and podcasts about health, diet and lifestyle.
 </p>
 
 <p align="center">
@@ -25,7 +24,8 @@
 - [📥 Contributing Guide](#-contributing-guide)
   - [🧩 Single entry schema](#-single-entry-schema)
   - [📋 Field reference](#-field-reference)
-  - [🚀 How to submit a new material](#-how-to-submit-a-new-material)
+  - [✉️ Option 1 (default): the form on the site](#️-option-1-default-the-form-on-the-site)
+  - [🛠️ Option 2: GitHub (pull request or discussion)](#️-option-2-github-pull-request-or-discussion)
 
 ---
 
@@ -46,6 +46,7 @@ All content is stored as JSON files in the [`content/`](content/) directory. At 
 - 🌙 **Dark / light mode** — theme toggle; defaults to the system setting (`prefers-color-scheme`), the choice is saved in `localStorage`.
 - 🔎 **Filters** — by tags, channel, person (guest), series and language; filters are reflected in the URL.
 - ♾️ **Infinite scroll** — materials load as you scroll.
+- ✉️ **Submission form (Web3Forms)** — a new material can be proposed without a GitHub account; it is emailed to the author as a ready-to-paste JSON entry. Protected by Cloudflare Turnstile CAPTCHA and rate limiting (5 submissions per day max, 30s cooldown between submissions).
 
 ---
 
@@ -60,6 +61,7 @@ All content is stored as JSON files in the [`content/`](content/) directory. At 
 | [`src/components/FilterPanel.jsx`](src/components/FilterPanel.jsx) | Filter panel (tags + dropdowns). |
 | [`src/components/VideoCard.jsx`](src/components/VideoCard.jsx) | Single material card. |
 | [`src/components/Flag.jsx`](src/components/Flag.jsx) | Flags as SVG (PL / GB). |
+| [`src/components/ContributionForm.jsx`](src/components/ContributionForm.jsx) | Submission form (Web3Forms). |
 | [`src/i18n.jsx`](src/i18n.jsx) | UI translation system (PL/EN). |
 | [`src/theme.jsx`](src/theme.jsx) | Theme system (light/dark) + react-select styles. |
 | [`src/languages.js`](src/languages.js) | Helpers for the `language` field (flag, language name). |
@@ -68,11 +70,11 @@ All content is stored as JSON files in the [`content/`](content/) directory. At 
 
 ## 📥 Contributing Guide
 
-The materials database is built automatically from the files in the `content/` directory and published weekly or more often. Below is how to add a new entry correctly.
+A material always has the same structure (described below). You can submit it in two ways — **the easiest is the form on the site** (Option 1), and if you prefer GitHub, via a pull request or discussion (Option 2).
 
 ### 🧩 Single entry schema
 
-Every new material (video or podcast) must follow the object structure described in [`content/_example.txt`](content/_example.txt):
+Every new material (video or podcast) has the object structure described in [`content/_example.txt`](content/_example.txt):
 
 ```json
 {
@@ -109,15 +111,27 @@ Every new material (video or podcast) must follow the object structure described
 | `topics` | ✅ | Tags/topics — lowercase, without the `#` sign. |
 | `series` | ⬜ | An object `{ "name", "order" }` or `null` if the material is not part of any series. |
 
-### 🚀 How to submit a new material
+### ✉️ Option 1 (default): the form on the site
+
+The simplest method — **no GitHub account required**:
+
+1. At the bottom of the site click **💡 Suggest content**.
+2. Fill in the form (type, title, link, language, channel, tags — the `guests` and `series` fields are optional).
+3. Submit. The proposal is emailed to the project author as a ready-to-paste JSON entry.
+
+The form uses the [Web3Forms](https://web3forms.com) service and is handled by the [`src/components/ContributionForm.jsx`](src/components/ContributionForm.jsx) component.
+
+### 🛠️ Option 2: GitHub (pull request or discussion)
+
+If you prefer GitHub:
 
 1. Add the entry to a JSON file named **after the channel** (`snake_case`) the material comes from. If a file for that channel does not exist yet — create it as an array with one object.
 2. Create a separate branch and open a **pull request** to the `develop` branch.
 3. At least once a week the changes will be published to the project's main branch.
 
-If that is not possible, open a [new request](https://github.com/pablottolbap/vitalio/discussions/new?category=new-materials-request) and provide as much of the information required by the template as you can.
+Don't want to open a PR? Open a [new request](https://github.com/pablottolbap/vitalio/discussions/new?category=new-materials-request) and provide as much of the information required by the template as you can.
 
-Report any bugs or suggestions in the project's [issues](https://github.com/pablottolbap/vitalio/issues), new features can be reported in [ideas](https://github.com/pablottolbap/vitalio/discussions/categories/ideas)
+Report any bugs in the project's [issues](https://github.com/pablottolbap/vitalio/issues), and ideas for the site in [ideas](https://github.com/pablottolbap/vitalio/discussions/categories/ideas).
 
 ---
 

@@ -3,6 +3,7 @@ import rawData from './data.json';
 import FilterPanel from './components/FilterPanel';
 import VideoCard from './components/VideoCard';
 import Flag from './components/Flag';
+import ContributionForm from './components/ContributionForm';
 import logo from './assets/logo.png';
 import { useLanguage } from './i18n.jsx';
 import { useTheme } from './theme.jsx';
@@ -23,6 +24,7 @@ export default function App() {
   const [activeTopic, setActiveTopic] = useState(null);
   const [activeSeries, setActiveSeries] = useState(null);
   const [activeLanguage, setActiveLanguage] = useState(null);
+  const [showContribute, setShowContribute] = useState(false);
 
   const [visibleCount, setVisibleCount] = useState(10);
   const observerRef = useRef(null);
@@ -179,52 +181,7 @@ export default function App() {
           )}
 
           <div ref={observerRef} style={{ height: '20px', margin: '20px 0' }} />
-          <footer style={{
-            marginTop: '60px',
-            paddingTop: '20px',
-            borderTop: `1px solid ${theme.border}`,
-            textAlign: 'center',
-            fontSize: '0.9em'
-          }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              gap: '30px', 
-              flexWrap: 'wrap', 
-              marginBottom: '15px' 
-            }}>
-              {/* PAMIĘTAJ: Zmień poniższe adresy URL na linki do Twojego repozytorium! */}
-              <a 
-                href="https://github.com/pablottolbap/vitalio" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                style={{ color: '#6f42c1', textDecoration: 'none', fontWeight: 'bold' }}
-              >
-                💻 {t('projectSite')}
-              </a>
-              
-              <a 
-                href="https://github.com/pablottolbap/vitalio/issues" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                style={{ color: '#dc3545', textDecoration: 'none', fontWeight: 'bold' }}
-              >
-                🐛 {t('reportBug')}
-              </a>
-              
-              <a 
-                href="https://github.com/pablottolbap/vitalio/discussions/new?category=new-materials-request" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                style={{ color: '#28a745', textDecoration: 'none', fontWeight: 'bold' }}
-              >
-                💡 {t('reportContent')}
-              </a>
-            </div>
-            <p style={{ margin: '0', fontSize: '0.8em', color: theme.faint }}>
-              {t('copyright')}
-            </p>
-          </footer>
+          <div style={{ height: '200px' }} />
         </div>
 
         {/* Sidebar "All channels in database" */}
@@ -242,10 +199,10 @@ export default function App() {
           <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
             {uniqueChannelsWithUrls.map(channel => (
               <li key={channel.name} style={{ marginBottom: '12px' }}>
-                <a 
-                  href={channel.channelUrl} 
-                  target="_blank" 
-                  rel="noreferrer" 
+                <a
+                  href={channel.channelUrl}
+                  target="_blank"
+                  rel="noreferrer"
                   style={{
                     color: theme.link,
                     textDecoration: 'none',
@@ -263,6 +220,61 @@ export default function App() {
         </aside>
 
       </div>
+
+      <footer style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: theme.pageBg,
+        borderTop: `1px solid ${theme.border}`,
+        paddingTop: '20px',
+        paddingBottom: '20px',
+        paddingLeft: '20px',
+        paddingRight: '20px',
+        textAlign: 'center',
+        fontSize: '0.9em',
+        zIndex: 100,
+        boxShadow: '0 -2px 8px rgba(0,0,0,0.1)'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '30px',
+          flexWrap: 'wrap',
+          marginBottom: '15px'
+        }}>
+          <a
+            href="https://github.com/pablottolbap/vitalio"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#6f42c1', textDecoration: 'none', fontWeight: 'bold' }}
+          >
+            💻 {t('projectSite')}
+          </a>
+
+          <a
+            href="https://github.com/pablottolbap/vitalio/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#dc3545', textDecoration: 'none', fontWeight: 'bold' }}
+          >
+            🐛 {t('reportBug')}
+          </a>
+
+          <button
+            onClick={() => setShowContribute(true)}
+            style={{ background: 'transparent', border: 'none', padding: 0, color: '#28a745', textDecoration: 'none', fontWeight: 'bold', fontSize: 'inherit', fontFamily: 'inherit', cursor: 'pointer' }}
+          >
+            💡 {t('reportContent')}
+          </button>
+        </div>
+        <p style={{ margin: '0', fontSize: '0.8em', color: theme.faint }}>
+          {t('copyright')}
+        </p>
+      </footer>
+
+      <ContributionForm open={showContribute} onClose={() => setShowContribute(false)} />
     </div>
   );
 }
