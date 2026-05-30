@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { render, screen, fireEvent, within, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { LanguageProvider } from './i18n.jsx';

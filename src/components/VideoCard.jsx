@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useLanguage } from '../i18n.jsx';
 import { useTheme } from '../theme.jsx';
 import { languageName } from '../languages.js';

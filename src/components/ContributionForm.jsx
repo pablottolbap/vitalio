@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Turnstile } from 'react-turnstile';
 import { useLanguage } from '../i18n.jsx';
 import { useTheme } from '../theme.jsx';
@@ -44,6 +44,7 @@ const recordSubmission = () => {
     submissions.push(new Date().toISOString());
     localStorage.setItem(STORAGE_KEY_SUBMISSIONS, JSON.stringify(submissions.slice(-50)));
   } catch {
+    // localStorage error — submission was sent but timestamp not recorded
   }
 };
 
@@ -57,10 +58,10 @@ export default function ContributionForm({ open, onClose }) {
   const [dailyLimitReached, setDailyLimitReached] = useState(false);
   const [urlErrors, setUrlErrors] = useState({});
 
-  // Check daily limit when form opens
   useEffect(() => {
     if (open) {
       const todaySubmissions = getSubmissionsToday();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDailyLimitReached(todaySubmissions.length >= 5);
     }
   }, [open]);
