@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Build & Deploy to GitHub Pages
 
 on:
   push:
@@ -7,8 +7,13 @@ on:
     tags:
       - 'v*.*.*'
 
+concurrency:
+  group: deployment
+  cancel-in-progress: false
+
 jobs:
-  test:
+  prepare:
+    name: Prepare & Validate
     runs-on: ubuntu-latest
 
     steps:
@@ -19,31 +24,39 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Lint code
+        run: npx eslint src scripts --max-warnings 0
+
+      - name: Lint data integrity
+        run: npm run lint
 
       - name: Run unit tests with coverage
         run: npm run coverage
 
-  build-and-deploy:
+  aggregate:
+    name: Aggregate Data
     runs-on: ubuntu-latest
-    needs: test
+    needs: prepare
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Lint data integrity
-        run: npm run lint
 
       - name: Run aggregation script
         run: node scripts/aggregate.js
@@ -53,21 +66,59 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           if git diff --quiet src/data.json; then
-            echo "No changes to src/data.json"
+            echo "✓ No changes to src/data.json"
           else
-            echo "Changes detected, committing..."
+            echo "Committing data changes..."
             git add src/data.json
-            git commit -m "update aggregated data [skip ci]"
+            git commit -m "chore: update aggregated data [skip ci]"
             git push
           fi
+
+  build:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    needs: [prepare, aggregate]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Build production version
         run: npm run build
         env:
           VITE_WEB3FORMS_ACCESS_KEY: ${{ secrets.VITE_WEB3FORMS_ACCESS_KEY }}
 
+      - name: Verify build output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "❌ Build failed: dist directory not found"
+            exit 1
+          fi
+          echo "✓ Build successful"
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          cname: vitalio.example.com
+          user_name: GitHub Action
+          user_email: action@github.com
+
+      - name: Create deployment status
+        if: success()
+        run: |
+          echo "✅ Deployment successful"
+          echo "📦 Version: ${{ github.ref_name }}"
+          echo "🚀 Available at: https://pablottolbap.github.io/vitalio/"
