@@ -1,6 +1,6 @@
 
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ThemeProvider, useTheme, selectStyles, themes } from './theme.jsx';
 
 function ThemeConsumer() {
@@ -22,6 +22,18 @@ function renderTheme() {
 }
 
 describe('ThemeProvider', () => {
+  beforeEach(() => {
+    vi.unstubAllGlobals();
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(() => null),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+    });
+    document.body.style.backgroundColor = '';
+    document.body.style.color = '';
+  });
+
   it('defaults to light mode', () => {
     renderTheme();
     expect(screen.getByTestId('mode')).toHaveTextContent('light');
