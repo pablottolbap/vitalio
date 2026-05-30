@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+
+/* eslint-disable react-refresh/only-export-components */
 
 // Prosty system motywów (jasny/ciemny) oparty na obiekcie kolorów.
 // Aplikacja używa stylów inline, więc kolory rozprowadzamy przez kontekst,

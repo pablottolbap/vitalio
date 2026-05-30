@@ -101,7 +101,7 @@ Każdy nowy materiał (wideo lub podcast) ma strukturę obiektu opisaną w pliku
 | Pole | Wymagane | Opis |
 | --- | :---: | --- |
 | `id` | ✅ | Unikalny identyfikator w formacie `nazwa-kanalu-numer` (np. `tlusta-agata-1`). |
-| `type` | ✅ | Typ materiału — dokładnie `"video"` lub `"podcast"`. |
+| `type` | ✅ | Typ materiału — `"video"`, `"podcast"` lub `"qa"`. |
 | `title` | ✅ | Pełny tytuł wyświetlany na karcie. |
 | `url` | ✅ | Pełny link do materiału w serwisie YouTube. |
 | `language` | ✅ | Język materiału — `"PL"` lub `"EN"` (steruje flagą i filtrem języka). |

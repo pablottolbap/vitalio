@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Select from 'react-select';
 import { useLanguage } from '../i18n.jsx';
 import { useTheme, selectStyles } from '../theme.jsx';

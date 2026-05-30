@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+
+/* eslint-disable react-refresh/only-export-components */
 
 // Lekki, bezzależnościowy system tłumaczeń interfejsu (PL/EN).
 // Tłumaczy WYŁĄCZNIE elementy interfejsu — tytuły materiałów pozostają

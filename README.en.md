@@ -101,7 +101,7 @@ Every new material (video or podcast) has the object structure described in [`co
 | Field | Required | Description |
 | --- | :---: | --- |
 | `id` | ✅ | Unique identifier in the `channel-name-number` format (e.g. `tlusta-agata-1`). |
-| `type` | ✅ | Material type — exactly `"video"` or `"podcast"`. |
+| `type` | ✅ | Material type — `"video"`, `"podcast"` or `"qa"`. |
 | `title` | ✅ | Full title shown on the card. |
 | `url` | ✅ | Full link to the material on YouTube. |
 | `language` | ✅ | Material language — `"PL"` or `"EN"` (drives the flag and language filter). |

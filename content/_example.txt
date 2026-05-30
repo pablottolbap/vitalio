@@ -1,6 +1,6 @@
  {
    "id": "folder-file-number",
-   "type": "video/podcast",
+   "type": "video/podcast/qa",
    "title": "title",
    "url": "https:www.youtube.com/watch?vabc",
    "language": "PL",

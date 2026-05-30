@@ -1,4 +1,4 @@
-import React, { useId } from 'react';
+import { useId } from 'react';
 
 // Flagi jako SVG — renderują się identycznie na każdej platformie
 // (emoji flag na Windowsie pokazują się jako litery, np. "PL").

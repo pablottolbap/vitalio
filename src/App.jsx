@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import rawData from './data.json';
 import FilterPanel from './components/FilterPanel';
 import VideoCard from './components/VideoCard';
@@ -18,7 +18,6 @@ const allData = [...rawData, ...mockData];
 export default function App() {
   const { lang, setLang, t } = useLanguage();
   const { theme, isDark, toggleTheme } = useTheme();
-  const searchParams = new URLSearchParams(window.location.search);
   const [activeChannel, setActiveChannel] = useState(null);
   const [activePerson, setActivePerson] = useState(null);
   const [activeTopic, setActiveTopic] = useState(null);
@@ -41,6 +40,7 @@ export default function App() {
   }, [activeTopic, activeChannel, activePerson, activeSeries, activeLanguage]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setVisibleCount(10);
   }, [activeTopic, activeChannel, activePerson, activeSeries, activeLanguage]);
 
