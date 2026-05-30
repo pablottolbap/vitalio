@@ -3,10 +3,11 @@ import { Turnstile } from 'react-turnstile';
 import { useLanguage } from '../i18n.jsx';
 import { useTheme } from '../theme.jsx';
 import Flag from './Flag';
+import { splitList, validateVideoUrl, validateChannelUrl } from '../validators.js';
 
 const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || 'YOUR_WEB3FORMS_ACCESS_KEY';
 const DISCUSSION_URL = 'https://github.com/pablottolbap/vitalio/discussions/new?category=new-materials-request';
-const TURNSTILE_SITE_KEY = '0x4AAAAAADYW-mr1tIn3QxNR';
+const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_KEY || 'YOUR_TURNSTILE_KEY';
 const STORAGE_KEY_SUBMISSIONS = 'vitalio-form-submissions';
 const IS_LOCALHOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
@@ -23,9 +24,6 @@ const EMPTY = {
   seriesOrder: '',
   email: '',
 };
-
-const splitList = (value) =>
-  value.split(',').map((s) => s.trim()).filter(Boolean);
 
 const getSubmissionsToday = () => {
   try {
@@ -46,7 +44,6 @@ const recordSubmission = () => {
     submissions.push(new Date().toISOString());
     localStorage.setItem(STORAGE_KEY_SUBMISSIONS, JSON.stringify(submissions.slice(-50)));
   } catch {
-    // ignore localStorage errors
   }
 };
 
@@ -58,6 +55,7 @@ export default function ContributionForm({ open, onClose }) {
   const [turnstileToken, setTurnstileToken] = useState(null);
   const [cooldown, setCooldown] = useState(0);
   const [dailyLimitReached, setDailyLimitReached] = useState(false);
+  const [urlErrors, setUrlErrors] = useState({});
 
   // Check daily limit when form opens
   useEffect(() => {
@@ -67,7 +65,6 @@ export default function ContributionForm({ open, onClose }) {
     }
   }, [open]);
 
-  // Cooldown countdown
   useEffect(() => {
     if (cooldown <= 0) return;
     const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
@@ -83,7 +80,20 @@ export default function ContributionForm({ open, onClose }) {
 
   if (!open) return null;
 
-  const set = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
+  const set = (key) => (e) => {
+    const value = e.target.value;
+    setForm((prev) => ({ ...prev, [key]: value }));
+
+    // Validate URLs on change
+    if (key === 'url' && value.trim()) {
+      const error = validateVideoUrl(value.trim());
+      setUrlErrors(prev => ({ ...prev, url: error }));
+    }
+    if (key === 'authorChannelUrl' && value.trim()) {
+      const error = validateChannelUrl(value.trim());
+      setUrlErrors(prev => ({ ...prev, authorChannelUrl: error }));
+    }
+  };
 
   const buildEntry = () => ({
     type: form.type,
@@ -109,6 +119,16 @@ export default function ContributionForm({ open, onClose }) {
       return;
     }
 
+    // Validate URLs before submission
+    const urlError = validateVideoUrl(form.url.trim());
+    const channelError = validateChannelUrl(form.authorChannelUrl.trim());
+
+    if (urlError || channelError) {
+      setUrlErrors({ url: urlError, authorChannelUrl: channelError });
+      setStatus('error');
+      return;
+    }
+
     setStatus('sending');
 
     const entry = buildEntry();
@@ -120,7 +140,6 @@ export default function ContributionForm({ open, onClose }) {
       message: JSON.stringify(entry, null, 2),
     };
 
-    // Only add Turnstile token in production
     if (!IS_LOCALHOST && turnstileToken) {
       payload['cf-turnstile-response'] = turnstileToken;
     }
@@ -279,6 +298,7 @@ export default function ContributionForm({ open, onClose }) {
             <div style={fieldStyle}>
               <label style={labelStyle}>{t('fldUrl')}</label>
               <input type="url" required placeholder="https://www.youtube.com/watch?v=..." value={form.url} onChange={set('url')} style={inputStyle} />
+              {urlErrors.url && <p style={{ color: '#dc3545', fontSize: '0.8em', margin: '4px 0 0 0' }}>{urlErrors.url}</p>}
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
@@ -289,6 +309,7 @@ export default function ContributionForm({ open, onClose }) {
               <div style={fieldStyle}>
                 <label style={labelStyle}>{t('fldChannelUrl')}</label>
                 <input type="url" required placeholder="https://www.youtube.com/@..." value={form.authorChannelUrl} onChange={set('authorChannelUrl')} style={inputStyle} />
+                {urlErrors.authorChannelUrl && <p style={{ color: '#dc3545', fontSize: '0.8em', margin: '4px 0 0 0' }}>{urlErrors.authorChannelUrl}</p>}
               </div>
             </div>
 
@@ -339,12 +360,12 @@ export default function ContributionForm({ open, onClose }) {
 
             <button
               type="submit"
-              disabled={status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !turnstileToken)}
+              disabled={status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !turnstileToken) || urlErrors.url || urlErrors.authorChannelUrl}
               style={{
                 width: '100%', padding: '10px', borderRadius: '6px', border: 'none',
                 background: theme.accent, color: '#fff', fontWeight: 'bold', fontSize: '0.95em',
-                cursor: (status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !turnstileToken)) ? 'not-allowed' : 'pointer',
-                opacity: (status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !turnstileToken)) ? 0.6 : 1,
+                cursor: (status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !turnstileToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 'not-allowed' : 'pointer',
+                opacity: (status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !turnstileToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 0.6 : 1,
               }}
             >
               {cooldown > 0
