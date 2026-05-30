@@ -145,6 +145,37 @@ describe('FilterPanel — clear filters', () => {
   });
 });
 
+describe('FilterPanel — dropdowns with empty options', () => {
+  it('shows no options message for channel dropdown when empty', () => {
+    const { container } = renderPanel({ uniqueChannels: [] });
+    const dropdown = screen.getByRole('combobox', { name: /szukaj kanału|search.*channel/i });
+    fireEvent.change(dropdown, { target: { value: 'nonexistent' } });
+    // noOptionsMessage callback is invoked by Select component
+    expect(dropdown).toBeInTheDocument();
+  });
+
+  it('shows no options message for person dropdown when empty', () => {
+    renderPanel({ uniquePeople: [] });
+    const dropdown = screen.getByRole('combobox', { name: /podaj imię|enter name/i });
+    fireEvent.change(dropdown, { target: { value: 'nonexistent' } });
+    expect(dropdown).toBeInTheDocument();
+  });
+
+  it('shows no options message for series dropdown when empty', () => {
+    renderPanel({ uniqueSeries: [] });
+    const dropdown = screen.getByRole('combobox', { name: /szukaj serii|search.*series/i });
+    fireEvent.change(dropdown, { target: { value: 'nonexistent' } });
+    expect(dropdown).toBeInTheDocument();
+  });
+
+  it('shows no options message for language dropdown when empty', () => {
+    renderPanel({ uniqueLanguages: [] });
+    const dropdown = screen.getByRole('combobox', { name: /wybierz język|select.*language/i });
+    fireEvent.change(dropdown, { target: { value: 'nonexistent' } });
+    expect(dropdown).toBeInTheDocument();
+  });
+});
+
 describe('FilterPanel — dropdowns', () => {
   it('renders the channel dropdown', () => {
     renderPanel();

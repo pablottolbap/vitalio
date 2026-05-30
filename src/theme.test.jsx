@@ -81,6 +81,36 @@ describe('ThemeProvider', () => {
       vi.unstubAllGlobals();
     }
   });
+
+  it('restores saved dark theme from localStorage', () => {
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(() => 'dark'),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+    });
+    try {
+      renderTheme();
+      expect(screen.getByTestId('mode')).toHaveTextContent('dark');
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it('restores saved light theme from localStorage', () => {
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn(() => 'light'),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+    });
+    try {
+      renderTheme();
+      expect(screen.getByTestId('mode')).toHaveTextContent('light');
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
 });
 
 describe('selectStyles', () => {
