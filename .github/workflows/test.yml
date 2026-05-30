@@ -56,6 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    if: github.event_name == 'pull_request'
 
     steps:
       - name: Checkout code
@@ -91,7 +92,7 @@ jobs:
   test:
     name: Unit Tests & Coverage
     runs-on: ubuntu-latest
-    needs: [lint, lint-data, aggregate-check]
+    needs: [lint, lint-data]
 
     steps:
       - name: Checkout code
