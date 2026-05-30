@@ -46,6 +46,393 @@
     }
   },
   {
+    "id": "karol-kus-masz-to-w-lesie-2",
+    "type": "podcast",
+    "title": "Co jeść doktorku? | Czy warto jeść owoce ? | Odcinek 2",
+    "url": "https://www.youtube.com/watch?v=S4VK128Mink",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "nutrition",
+      "fruits",
+      "sugar",
+      "diet",
+      "fat",
+      "proteins"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 2
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-3",
+    "type": "podcast",
+    "title": "Co jeść doktorku ? | Czy chleb nasz powszedni nam szkodzi ? Odcinek 3",
+    "url": "https://www.youtube.com/watch?v=iZ6SvYT6W14",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "nutrition",
+      "bread",
+      "grains",
+      "diet"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 3
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-4",
+    "type": "qa",
+    "title": "Co jeść doktorku? Q&A #01 | Jacek Safuta odpowiada na pytania widzów",
+    "url": "https://www.youtube.com/watch?v=Z61NEv4KT2g",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "qa"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 4
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-5",
+    "type": "podcast",
+    "title": "Co jeść doktorku ? | Czy warzywa są naprawdę niezbędne dla zdrowia? | Odcinek 4",
+    "url": "https://www.youtube.com/watch?v=QM8o9k04wwM",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "nutrition",
+      "vegetables",
+      "diet"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 5
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-6",
+    "type": "podcast",
+    "title": "Co jeść doktorku? | Tłuszcze w diecie - które są naprawdę zdrowe?",
+    "url": "https://www.youtube.com/watch?v=vqOFnvo_pLc",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "nutrition",
+      "fats",
+      "metabolism",
+      "diet"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 6
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-7",
+    "type": "qa",
+    "title": "Co jeść doktorku? Q&A #02 | Jacek Safuta odpowiada na pytania widzów",
+    "url": "https://www.youtube.com/watch?v=FSOIboOvUks",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "qa"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 7
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-8",
+    "type": "qa",
+    "title": "Co jeść doktorku? Q&A #03 | Jacek Safuta odpowiada na pytania widzów",
+    "url": "https://www.youtube.com/watch?v=4fr9eAETA18",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "qa"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 8
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-9",
+    "type": "podcast",
+    "title": "Co jeść doktorku? | Pijesz kawę codziennie? Zobacz, co naprawdę robi kofeina",
+    "url": "https://www.youtube.com/watch?v=UyK8s9BEiDk",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "habits",
+      "caffeine",
+      "coffee",
+      "tea",
+      "cortisol"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 9
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-10",
+    "type": "qa",
+    "title": "Co jeść doktorku? Q&A #04 | Jacek Safuta odpowiada na pytania widzów",
+    "url": "https://www.youtube.com/watch?v=pUKdiGFRrPc",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "qa"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 10
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-11",
+    "type": "podcast",
+    "title": "Co jeść doktorku? | Zioła: naturalne, więc bezpieczne? Największy mit zdrowego żywienia",
+    "url": "https://www.youtube.com/watch?v=sLdz7KVSD2g",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "herbs",
+      "oxalates",
+      "salicylates ",
+      "histamine",
+      "diet"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 11
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-12",
+    "type": "qa",
+    "title": "Co jeść doktorku? Q&A #05 | Odpowiadamy na pytania widzów",
+    "url": "https://www.youtube.com/watch?v=Y6tuBV_cv-0",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "qa"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 12
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-13",
+    "type": "podcast",
+    "title": "Co jeść doktorku? | Grzyby: superfood z lasu czy przereklamowany mit?",
+    "url": "https://www.youtube.com/watch?v=RsJ9huTlnaU",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "mushrooms",
+      "superfoods",
+      "nutrition",
+      "diet",
+      "toxins"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 13
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-14",
+    "type": "qa",
+    "title": "Co jeść doktorku? Q&A #06 | Odpowiadamy na pytania widzów - Grzyby",
+    "url": "https://www.youtube.com/watch?v=dAYIgXMYdLk",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "qa"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 14
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-15",
+    "type": "podcast",
+    "title": "Co jeść doktorku? | Nabiał cz.1 I Buduje kości czy je niszczy?",
+    "url": "https://www.youtube.com/watch?v=9ICIU-Uc1w4",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "dairy",
+      "casein",
+      "nutrition",
+      "diet",
+      "calcium",
+      "evolution"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 15
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-16",
+    "type": "podcast",
+    "title": "Co jeść doktorku? | Nabiał cz. 2: mleko A2 — hit czy kit? Kazeina, sery i co mówi nauka",
+    "url": "https://www.youtube.com/watch?v=0g0LAC1ISmM",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "dairy",
+      "casein",
+      "nutrition",
+      "diet"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 16
+    }
+  },
+  {
+    "id": "kierunek-zdrowie-1",
+    "type": "podcast",
+    "title": "To nie cholesterol jest problemem?! Wątroba kocha tłuszcz",
+    "url": "https://www.youtube.com/watch?v=38OOz3xmOp4",
+    "language": "PL",
+    "author": {
+      "name": "kierunek zdrowie",
+      "channelUrl": "https://www.youtube.com/@kierunekzdrowie1074"
+    },
+    "guests": [
+      "Sylwia Suchanek",
+      "Magdalena Gallus"
+    ],
+    "topics": [
+      "liver",
+      "cholesterol",
+      "metabolism",
+      "diet",
+      "hormones",
+      "fat"
+    ],
+    "series": null
+  },
+  {
     "id": "tlusta-agata-1",
     "type": "video",
     "title": "Jak zacząć dietę Carnivore?",
