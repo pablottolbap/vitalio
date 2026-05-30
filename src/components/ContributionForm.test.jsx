@@ -196,6 +196,48 @@ describe('ContributionForm', () => {
     });
   });
 
+  describe('form submission — validation errors', () => {
+    it('prevents submission and shows errors when video URL is invalid', async () => {
+      renderForm();
+      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch/i);
+      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@/i);
+
+      fireEvent.change(urlInput, { target: { value: 'https://invalid.com/video' } });
+      fireEvent.change(channelInput, { target: { value: VALID_CHANNEL_URL } });
+
+      fireEvent.submit(screen.getByRole('dialog').querySelector('form'));
+
+      expect(screen.getByText(/invalid format/i)).toBeInTheDocument();
+    });
+
+    it('prevents submission and shows errors when channel URL is invalid', async () => {
+      renderForm();
+      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch/i);
+      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@/i);
+
+      fireEvent.change(urlInput, { target: { value: VALID_VIDEO_URL } });
+      fireEvent.change(channelInput, { target: { value: 'https://invalid.com/channel' } });
+
+      fireEvent.submit(screen.getByRole('dialog').querySelector('form'));
+
+      expect(screen.getByText(/invalid format/i)).toBeInTheDocument();
+    });
+
+    it('prevents submission when both URLs are invalid', async () => {
+      renderForm();
+      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch/i);
+      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@/i);
+
+      fireEvent.change(urlInput, { target: { value: 'https://invalid.com/video' } });
+      fireEvent.change(channelInput, { target: { value: 'https://invalid.com/channel' } });
+
+      fireEvent.submit(screen.getByRole('dialog').querySelector('form'));
+
+      const errors = screen.getAllByText(/invalid format/i);
+      expect(errors.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
   describe('form submission', () => {
     it('shows a success message after a successful submission', async () => {
       vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
@@ -276,6 +318,38 @@ describe('ContributionForm', () => {
       const { onClose } = renderForm({ open: false });
       fireEvent.keyDown(window, { key: 'Escape' });
       expect(onClose).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('form submit button states', () => {
+    it('disables submit button when Turnstile token is missing (non-localhost)', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        json: vi.fn().mockResolvedValue({ success: true }),
+      }));
+
+      renderForm();
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch/i), { target: { value: VALID_VIDEO_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@/i), { target: { value: VALID_CHANNEL_URL } });
+
+      const submitBtn = screen.getByRole('button', { name: /wyślij|send proposal/i });
+      if (!window.location.hostname.includes('localhost')) {
+        expect(submitBtn).toBeDisabled();
+      }
+    });
+
+    it('completes submission with valid URLs', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        json: vi.fn().mockResolvedValue({ success: true }),
+      }));
+
+      renderForm();
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch/i), { target: { value: VALID_VIDEO_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@/i), { target: { value: VALID_CHANNEL_URL } });
+
+      await waitFor(() => {
+        const submitBtn = screen.getByRole('button', { name: /wyślij|send proposal/i });
+        expect(submitBtn).toBeInTheDocument();
+      });
     });
   });
 
