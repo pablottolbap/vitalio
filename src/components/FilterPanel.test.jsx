@@ -147,7 +147,7 @@ describe('FilterPanel — clear filters', () => {
 
 describe('FilterPanel — dropdowns with empty options', () => {
   it('shows no options message for channel dropdown when empty', () => {
-    const { container } = renderPanel({ uniqueChannels: [] });
+    renderPanel({ uniqueChannels: [] });
     const dropdown = screen.getByRole('combobox', { name: /szukaj kanału|search.*channel/i });
     fireEvent.change(dropdown, { target: { value: 'nonexistent' } });
     // noOptionsMessage callback is invoked by Select component
