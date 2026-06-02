@@ -7,11 +7,10 @@ import { splitList, validateVideoUrl, validateChannelUrl, normalizeVideoUrl, nor
 
 const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || 'YOUR_WEB3FORMS_ACCESS_KEY';
 const DISCUSSION_URL = 'https://github.com/pablottolbap/vitalio/discussions/new?category=new-materials-request';
-const HCAPTCHA_SITEKEY = import.meta.env.VITE_HCAPTCHA_SITEKEY || 'YOUR_HCAPTCHA_SITEKEY';
+const HCAPTCHA_SITEKEY = '50b2fe65-b00b-4b9e-ad62-3ba471098be2';
 const STORAGE_KEY_SUBMISSIONS = 'vitalio-form-submissions';
 const IS_LOCALHOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const IS_TEST_KEY = HCAPTCHA_SITEKEY === '10000000-ffff-ffff-ffff-000000000001';
-const SKIP_CAPTCHA = IS_LOCALHOST || IS_TEST_KEY;
+const SKIP_CAPTCHA = IS_LOCALHOST;
 
 const DEMO_DATA = {
   type: 'video',
@@ -410,7 +409,7 @@ export default function ContributionForm({ open, onClose }) {
             )}
             {SKIP_CAPTCHA && (
               <p style={{ fontSize: '0.85em', color: theme.muted, textAlign: 'center', marginBottom: '16px', fontStyle: 'italic' }}>
-                🔓 hCaptcha skipped {IS_TEST_KEY ? '(test key)' : 'in development mode'}
+                🔓 hCaptcha skipped in development mode
               </p>
             )}
 
