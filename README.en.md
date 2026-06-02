@@ -121,13 +121,23 @@ The simplest method — **no GitHub account required**:
 
 The form uses the [Web3Forms](https://web3forms.com) service and is handled by the [`src/components/ContributionForm.jsx`](src/components/ContributionForm.jsx) component.
 
+**⚠️ YouTube link formats:**
+- Video link: we accept both `https://www.youtube.com/watch?v=...` and the short form `https://youtu.be/...`
+- Channel link: we accept both `https://www.youtube.com/@...` and without `www`: `https://youtube.com/@...`
+- Any tracking parameters (e.g. `?si=` or `?is=`) are automatically removed when you submit
+
+**Submission limit:** maximum **5 proposals per day**. If you've hit the limit — you can open a [discussion on GitHub](https://github.com/pablottolbap/vitalio/discussions/new?category=new-materials-request).
+
+**Troubleshooting:**
+- If you encounter any issues, try opening the site with the `?reset=1` parameter, e.g.: `https://pablottolbap.github.io/vitalio/?reset=1` — this will clear your interface settings (language and theme).
+
 ### 🛠️ Option 2: GitHub (pull request or discussion)
 
 If you prefer GitHub:
 
 1. Add the entry to a JSON file named **after the channel** (`snake_case`) the material comes from. If a file for that channel does not exist yet — create it as an array with one object.
 2. Create a separate branch and open a **pull request** to the `develop` branch.
-3. At least once a week the changes will be published to the project's main branch.
+3. Changes will be published to the project's main branch as often as possible.
 
 Don't want to open a PR? Open a [new request](https://github.com/pablottolbap/vitalio/discussions/new?category=new-materials-request) and provide as much of the information required by the template as you can.
 

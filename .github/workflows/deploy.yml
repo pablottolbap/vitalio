@@ -62,6 +62,7 @@ jobs:
         run: npm run build
         env:
           VITE_WEB3FORMS_ACCESS_KEY: ${{ secrets.VITE_WEB3FORMS_ACCESS_KEY }}
+          VITE_TURNSTILE_KEY: ${{ secrets.VITE_TURNSTILE_KEY }}
 
       - name: Verify build output
         run: |

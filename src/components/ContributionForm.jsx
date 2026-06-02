@@ -3,11 +3,11 @@ import { Turnstile } from 'react-turnstile';
 import { useLanguage } from '../i18n.jsx';
 import { useTheme } from '../theme.jsx';
 import Flag from './Flag';
-import { splitList, validateVideoUrl, validateChannelUrl } from '../validators.js';
+import { splitList, validateVideoUrl, validateChannelUrl, normalizeVideoUrl, normalizeChannelUrl } from '../validators.js';
 
 const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || 'YOUR_WEB3FORMS_ACCESS_KEY';
 const DISCUSSION_URL = 'https://github.com/pablottolbap/vitalio/discussions/new?category=new-materials-request';
-const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_KEY || 'YOUR_TURNSTILE_KEY';
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_KEY || 'YOUR_TURNSTILE_KEY';
 const STORAGE_KEY_SUBMISSIONS = 'vitalio-form-submissions';
 const IS_LOCALHOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
@@ -93,6 +93,26 @@ export default function ContributionForm({ open, onClose }) {
     if (key === 'authorChannelUrl' && value.trim()) {
       const error = validateChannelUrl(value.trim());
       setUrlErrors(prev => ({ ...prev, authorChannelUrl: error }));
+    }
+  };
+
+  const handleUrlBlur = () => {
+    const trimmed = form.url.trim();
+    if (trimmed) {
+      const result = normalizeVideoUrl(trimmed);
+      if (!result.error && result.normalized) {
+        setForm((prev) => ({ ...prev, url: result.normalized }));
+      }
+    }
+  };
+
+  const handleChannelUrlBlur = () => {
+    const trimmed = form.authorChannelUrl.trim();
+    if (trimmed) {
+      const result = normalizeChannelUrl(trimmed);
+      if (!result.error && result.normalized) {
+        setForm((prev) => ({ ...prev, authorChannelUrl: result.normalized }));
+      }
     }
   };
 
@@ -226,12 +246,22 @@ export default function ContributionForm({ open, onClose }) {
         {dailyLimitReached && !status.includes('success') ? (
           <div style={{ padding: '16px', borderRadius: '8px', background: theme.panel, textAlign: 'center' }}>
             <p style={{ margin: '0 0 16px 0' }}>⏳ {t('formDailyLimit')}</p>
-            <button
-              onClick={onClose}
-              style={{ background: theme.accent, color: '#fff', border: 'none', padding: '8px 18px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-            >
-              {t('close')}
-            </button>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button
+                onClick={onClose}
+                style={{ background: theme.accent, color: '#fff', border: 'none', padding: '8px 18px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                {t('close')}
+              </button>
+              <a
+                href={DISCUSSION_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ background: theme.card, color: theme.link, border: `1px solid ${theme.border}`, padding: '8px 18px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', textDecoration: 'none', display: 'inline-block' }}
+              >
+                {t('formOrDiscussion')}
+              </a>
+            </div>
           </div>
         ) : status === 'success' ? (
           <div style={{ padding: '16px', borderRadius: '8px', background: theme.panel, textAlign: 'center' }}>
@@ -298,7 +328,7 @@ export default function ContributionForm({ open, onClose }) {
 
             <div style={fieldStyle}>
               <label style={labelStyle}>{t('fldUrl')}</label>
-              <input type="url" required placeholder="https://www.youtube.com/watch?v=..." value={form.url} onChange={set('url')} style={inputStyle} />
+              <input type="url" required placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..." value={form.url} onChange={set('url')} onBlur={handleUrlBlur} style={inputStyle} />
               {urlErrors.url && <p style={{ color: '#dc3545', fontSize: '0.8em', margin: '4px 0 0 0' }}>{urlErrors.url}</p>}
             </div>
 
@@ -309,7 +339,7 @@ export default function ContributionForm({ open, onClose }) {
               </div>
               <div style={fieldStyle}>
                 <label style={labelStyle}>{t('fldChannelUrl')}</label>
-                <input type="url" required placeholder="https://www.youtube.com/@..." value={form.authorChannelUrl} onChange={set('authorChannelUrl')} style={inputStyle} />
+                <input type="url" required placeholder="https://www.youtube.com/@... or https://youtube.com/@..." value={form.authorChannelUrl} onChange={set('authorChannelUrl')} onBlur={handleChannelUrlBlur} style={inputStyle} />
                 {urlErrors.authorChannelUrl && <p style={{ color: '#dc3545', fontSize: '0.8em', margin: '4px 0 0 0' }}>{urlErrors.authorChannelUrl}</p>}
               </div>
             </div>
@@ -375,6 +405,10 @@ export default function ContributionForm({ open, onClose }) {
                 ? t('formSending')
                 : t('formSubmit')}
             </button>
+
+            <p style={{ textAlign: 'center', margin: '12px 0 0 0', fontSize: '0.8em', color: theme.muted }}>
+              {t('formSubmitCount').replace('{used}', getSubmissionsToday().length)}
+            </p>
 
             <p style={{ textAlign: 'center', marginBottom: 0, marginTop: '14px', fontSize: '0.85em' }}>
               <a href={DISCUSSION_URL} target="_blank" rel="noopener noreferrer" style={{ color: theme.link }}>

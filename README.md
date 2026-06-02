@@ -121,13 +121,23 @@ Najprostsza metoda — **nie wymaga konta GitHub**:
 
 Formularz korzysta z usługi [Web3Forms](https://web3forms.com) i jest obsługiwany przez komponent [`src/components/ContributionForm.jsx`](src/components/ContributionForm.jsx).
 
+**⚠️ Format adresów YouTube:**
+- Link do wideo: akceptujemy zarówno `https://www.youtube.com/watch?v=...` jak i skrótowy `https://youtu.be/...`
+- Link do kanału: akceptujemy zarówno `https://www.youtube.com/@...` jak i bez `www`: `https://youtube.com/@...`
+- Wszelkie parametry śledzące (np. `?si=` czy `?is=`) są automatycznie usuwane przy wysłaniu
+
+**Limit zgłoszeń:** maksymalnie **5 propozycji na dzień**. Jeśli osiągnąłeś limit — możesz otwórzyć [dyskusję na GitHub](https://github.com/pablottolbap/vitalio/discussions/new?category=new-materials-request).
+
+**Rozwiązywanie problemów:**
+- W razie wystąpienia błędów można najpierw spróbować otworzyć stronę z parametrem `?reset=1`, np.: `https://pablottolbap.github.io/vitalio/?reset=1` — to wyczyści ustawienia interfejsu (język i motyw).
+
 ### 🛠️ Sposób 2: GitHub (pull request lub dyskusja)
 
 Jeśli wolisz GitHub:
 
 1. Dodaj wpis do pliku JSON o nazwie **odpowiadającej kanałowi** (`snake_case`), z którego pochodzi materiał. Jeśli plik dla danego kanału jeszcze nie istnieje — utwórz go jako tablicę z jednym obiektem.
 2. Utwórz osobny branch i wykonaj **pull request** do gałęzi `develop`.
-3. Przynajmniej raz w tygodniu zmiany będą publikowane w głównej gałęzi projektu.
+3. Zmiany będą publikowane w głównej gałęzi projektu, tak często jak to będzie możliwe.
 
 Nie chcesz robić PR-a? Otwórz [nowe zapotrzebowanie](https://github.com/pablottolbap/vitalio/discussions/new?category=new-materials-request) i podaj jak najwięcej informacji wymaganych przez szablon.
 
