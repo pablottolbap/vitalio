@@ -105,6 +105,14 @@ describe('ContributionForm', () => {
       expect(screen.queryByText(/invalid format/i)).not.toBeInTheDocument();
     });
 
+    it('does not normalize empty video URL on blur', () => {
+      renderForm();
+      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i);
+      fireEvent.change(urlInput, { target: { value: '   ' } });
+      fireEvent.blur(urlInput);
+      expect(urlInput.value).toBe('');
+    });
+
     it('disables the submit button when the video URL is invalid', () => {
       renderForm();
       const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i);
@@ -153,6 +161,14 @@ describe('ContributionForm', () => {
       expect(screen.queryByText(/invalid format/i)).not.toBeInTheDocument();
     });
 
+    it('does not normalize empty channel URL on blur', () => {
+      renderForm();
+      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i);
+      fireEvent.change(channelInput, { target: { value: '   ' } });
+      fireEvent.blur(channelInput);
+      expect(channelInput.value).toBe('');
+    });
+
     it('disables the submit button when the channel URL is invalid', () => {
       renderForm();
       const channelInput = screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i);
@@ -195,6 +211,36 @@ describe('ContributionForm', () => {
       const guestsInput = screen.getByPlaceholderText(/jan kowalski, anna nowak/i);
       fireEvent.change(guestsInput, { target: { value: 'Anna Nowak' } });
       expect(guestsInput.value).toBe('Anna Nowak');
+    });
+
+    it('includes series name and order in submission payload when provided', async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        json: vi.fn().mockResolvedValue({ success: true }),
+      });
+      vi.stubGlobal('fetch', fetchMock);
+
+      renderForm();
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i), { target: { value: VALID_VIDEO_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i), { target: { value: VALID_CHANNEL_URL } });
+
+      const inputs = screen.getAllByRole('textbox');
+      const seriesNameInput = inputs[inputs.length - 2];
+      const seriesOrderInput = screen.getByRole('spinbutton');
+      fireEvent.change(seriesNameInput, { target: { value: 'Test Series' } });
+      fireEvent.change(seriesOrderInput, { target: { value: '5' } });
+
+      fireEvent.submit(screen.getByRole('dialog').querySelector('form'));
+
+      await waitFor(() =>
+        expect(fetchMock).toHaveBeenCalled(),
+        { timeout: 3000 }
+      );
+
+      const payload = JSON.parse(fetchMock.mock.calls[0][1].body);
+      const entry = JSON.parse(payload.message);
+      expect(entry.series).toBeDefined();
+      expect(entry.series.name).toBe('Test Series');
+      expect(entry.series.order).toBe(5);
     });
   });
 
@@ -327,6 +373,35 @@ describe('ContributionForm', () => {
 
       const errors = screen.getAllByText(/invalid format/i);
       expect(errors.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('sends null series when series name is not provided', async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        json: vi.fn().mockResolvedValue({ success: true }),
+      });
+      vi.stubGlobal('fetch', fetchMock);
+
+      renderForm();
+      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i);
+      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i);
+
+      fireEvent.change(urlInput, { target: { value: VALID_VIDEO_URL } });
+      fireEvent.change(channelInput, { target: { value: VALID_CHANNEL_URL } });
+
+      const inputs = screen.getAllByRole('textbox');
+      const seriesNameInput = inputs[inputs.length - 2];
+      fireEvent.change(seriesNameInput, { target: { value: '' } });
+
+      fireEvent.submit(screen.getByRole('dialog').querySelector('form'));
+
+      await waitFor(() =>
+        expect(fetchMock).toHaveBeenCalled(),
+        { timeout: 3000 }
+      );
+
+      const payload = JSON.parse(fetchMock.mock.calls[0][1].body);
+      const entry = JSON.parse(payload.message);
+      expect(entry.series).toBeNull();
     });
   });
 

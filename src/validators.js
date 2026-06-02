@@ -1,6 +1,22 @@
+/**
+ * @typedef {Object} NormalizationResult
+ * @property {string|null} normalized - Normalized URL or null if invalid
+ * @property {string|null} error - Error message or null if valid
+ */
+
+/**
+ * Split comma-separated string into trimmed array of non-empty values
+ * @param {string} value
+ * @returns {string[]}
+ */
 export const splitList = (value) =>
   value.split(',').map((s) => s.trim()).filter(Boolean);
 
+/**
+ * Normalize YouTube video URL to canonical form, stripping tracking parameters
+ * @param {string} url - YouTube URL (watch?v= or youtu.be format)
+ * @returns {NormalizationResult}
+ */
 export const normalizeVideoUrl = (url) => {
   if (!url) {
     return { normalized: null, error: 'Invalid format. Expected: https://www.youtube.com/watch?v=dQw4w9WgXcQ or https://youtu.be/dQw4w9WgXcQ' };
@@ -25,6 +41,11 @@ export const normalizeVideoUrl = (url) => {
   return { normalized: `https://www.youtube.com/watch?v=${videoId}`, error: null };
 };
 
+/**
+ * Normalize YouTube channel URL to canonical form with www prefix, stripping tracking parameters
+ * @param {string} url - YouTube channel URL (@ChannelHandle format)
+ * @returns {NormalizationResult}
+ */
 export const normalizeChannelUrl = (url) => {
   if (!url) {
     return { normalized: null, error: 'Invalid format. Expected: https://www.youtube.com/@ChannelName' };
@@ -49,11 +70,21 @@ export const normalizeChannelUrl = (url) => {
   return { normalized: `https://www.youtube.com/@${handle}`, error: null };
 };
 
+/**
+ * Validate YouTube video URL format
+ * @param {string} url
+ * @returns {string|null} Error message or null if valid
+ */
 export const validateVideoUrl = (url) => {
   const result = normalizeVideoUrl(url);
   return result.error;
 };
 
+/**
+ * Validate YouTube channel URL format
+ * @param {string} url
+ * @returns {string|null} Error message or null if valid
+ */
 export const validateChannelUrl = (url) => {
   const result = normalizeChannelUrl(url);
   return result.error;
