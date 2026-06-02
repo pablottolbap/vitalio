@@ -29,6 +29,19 @@ export default function App() {
   const observerRef = useRef(null);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('reset') && params.get('reset') === '1') {
+      try {
+        localStorage.removeItem('vitalio-ui-lang');
+        localStorage.removeItem('vitalio-theme');
+      } catch {
+        // localStorage access error — continue anyway
+      }
+      window.history.replaceState(null, '', import.meta.env.BASE_URL);
+    }
+  }, []);
+
+  useEffect(() => {
     const params = new URLSearchParams();
     if (activeTopic) params.set('topic', activeTopic);
     if (activeChannel) params.set('channel', activeChannel);

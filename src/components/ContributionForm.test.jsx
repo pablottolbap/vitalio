@@ -66,14 +66,37 @@ describe('ContributionForm', () => {
   describe('video URL validation', () => {
     it('shows an error for an invalid video URL', () => {
       renderForm();
-      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch/i);
-      fireEvent.change(urlInput, { target: { value: 'https://youtu.be/dQw4w9WgXcQ' } });
+      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i);
+      fireEvent.change(urlInput, { target: { value: 'https://invalid.com/video' } });
       expect(screen.getByText(/invalid format/i)).toBeInTheDocument();
+    });
+
+    it('accepts a youtu.be shortlink', () => {
+      renderForm();
+      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i);
+      fireEvent.change(urlInput, { target: { value: 'https://youtu.be/dQw4w9WgXcQ' } });
+      expect(screen.queryByText(/invalid format/i)).not.toBeInTheDocument();
+    });
+
+    it('normalizes youtu.be shortlink to canonical URL on blur', () => {
+      renderForm();
+      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i);
+      fireEvent.change(urlInput, { target: { value: 'https://youtu.be/dQw4w9WgXcQ' } });
+      fireEvent.blur(urlInput);
+      expect(urlInput.value).toBe('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+    });
+
+    it('strips tracking params from youtu.be link on blur', () => {
+      renderForm();
+      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i);
+      fireEvent.change(urlInput, { target: { value: 'https://youtu.be/ZWvJkq3XqqA?si=pZv96lCDSMtRRGsh' } });
+      fireEvent.blur(urlInput);
+      expect(urlInput.value).toBe('https://www.youtube.com/watch?v=ZWvJkq3XqqA');
     });
 
     it('clears the video URL error when a valid URL is entered', () => {
       renderForm();
-      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch/i);
+      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i);
       fireEvent.change(urlInput, { target: { value: 'https://youtu.be/bad' } });
       expect(screen.getByText(/invalid format/i)).toBeInTheDocument();
       fireEvent.change(urlInput, { target: { value: VALID_VIDEO_URL } });
@@ -82,7 +105,7 @@ describe('ContributionForm', () => {
 
     it('disables the submit button when the video URL is invalid', () => {
       renderForm();
-      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch/i);
+      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i);
       fireEvent.change(urlInput, { target: { value: 'https://youtu.be/bad' } });
       expect(screen.getByRole('button', { name: /wyślij|send proposal/i })).toBeDisabled();
     });
@@ -91,14 +114,37 @@ describe('ContributionForm', () => {
   describe('channel URL validation', () => {
     it('shows an error for an invalid channel URL', () => {
       renderForm();
-      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@/i);
+      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i);
       fireEvent.change(channelInput, { target: { value: 'https://www.youtube.com/c/channel' } });
       expect(screen.getByText(/invalid format/i)).toBeInTheDocument();
     });
 
+    it('accepts a channel URL without www', () => {
+      renderForm();
+      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i);
+      fireEvent.change(channelInput, { target: { value: 'https://youtube.com/@testchannel' } });
+      expect(screen.queryByText(/invalid format/i)).not.toBeInTheDocument();
+    });
+
+    it('normalizes non-www channel URL to canonical on blur', () => {
+      renderForm();
+      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i);
+      fireEvent.change(channelInput, { target: { value: 'https://youtube.com/@testchannel' } });
+      fireEvent.blur(channelInput);
+      expect(channelInput.value).toBe('https://www.youtube.com/@testchannel');
+    });
+
+    it('strips tracking params from channel URL on blur', () => {
+      renderForm();
+      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i);
+      fireEvent.change(channelInput, { target: { value: 'https://www.youtube.com/@infouprawa5321?si=-P7YviRue4LI_DOS' } });
+      fireEvent.blur(channelInput);
+      expect(channelInput.value).toBe('https://www.youtube.com/@infouprawa5321');
+    });
+
     it('clears the channel URL error when a valid URL is entered', () => {
       renderForm();
-      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@/i);
+      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i);
       fireEvent.change(channelInput, { target: { value: 'https://www.youtube.com/c/bad' } });
       expect(screen.getByText(/invalid format/i)).toBeInTheDocument();
       fireEvent.change(channelInput, { target: { value: VALID_CHANNEL_URL } });
@@ -107,7 +153,7 @@ describe('ContributionForm', () => {
 
     it('disables the submit button when the channel URL is invalid', () => {
       renderForm();
-      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@/i);
+      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i);
       fireEvent.change(channelInput, { target: { value: 'https://www.youtube.com/c/bad' } });
       expect(screen.getByRole('button', { name: /wyślij|send proposal/i })).toBeDisabled();
     });
@@ -194,13 +240,57 @@ describe('ContributionForm', () => {
 
       vi.unstubAllGlobals();
     });
+
+    it('shows GitHub Discussion link in daily limit block', async () => {
+      const today = new Date().toISOString();
+      vi.stubGlobal('localStorage', {
+        getItem: vi.fn((key) =>
+          key === 'vitalio-form-submissions'
+            ? JSON.stringify(Array(5).fill(today))
+            : null
+        ),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn(),
+      });
+
+      renderForm();
+
+      await waitFor(() => {
+        expect(screen.getByRole('link', { name: /wolisz github|prefer github/i })).toBeInTheDocument();
+      });
+
+      vi.unstubAllGlobals();
+    });
+
+    it('shows submission count hint when form is open', async () => {
+      const today = new Date().toISOString();
+      vi.stubGlobal('localStorage', {
+        getItem: vi.fn((key) =>
+          key === 'vitalio-form-submissions'
+            ? JSON.stringify([today])
+            : null
+        ),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn(),
+      });
+
+      renderForm();
+
+      await waitFor(() => {
+        expect(screen.getByText(/submitted: 1 \/ 5|wykorzystany limit: 1 \/ 5/i)).toBeInTheDocument();
+      });
+
+      vi.unstubAllGlobals();
+    });
   });
 
   describe('form submission — validation errors', () => {
     it('prevents submission and shows errors when video URL is invalid', async () => {
       renderForm();
-      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch/i);
-      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@/i);
+      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i);
+      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i);
 
       fireEvent.change(urlInput, { target: { value: 'https://invalid.com/video' } });
       fireEvent.change(channelInput, { target: { value: VALID_CHANNEL_URL } });
@@ -212,8 +302,8 @@ describe('ContributionForm', () => {
 
     it('prevents submission and shows errors when channel URL is invalid', async () => {
       renderForm();
-      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch/i);
-      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@/i);
+      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i);
+      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i);
 
       fireEvent.change(urlInput, { target: { value: VALID_VIDEO_URL } });
       fireEvent.change(channelInput, { target: { value: 'https://invalid.com/channel' } });
@@ -225,8 +315,8 @@ describe('ContributionForm', () => {
 
     it('prevents submission when both URLs are invalid', async () => {
       renderForm();
-      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch/i);
-      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@/i);
+      const urlInput = screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i);
+      const channelInput = screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i);
 
       fireEvent.change(urlInput, { target: { value: 'https://invalid.com/video' } });
       fireEvent.change(channelInput, { target: { value: 'https://invalid.com/channel' } });
@@ -247,8 +337,8 @@ describe('ContributionForm', () => {
       renderForm();
 
       // Fill required fields with valid data
-      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch/i), { target: { value: VALID_VIDEO_URL } });
-      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@/i), { target: { value: VALID_CHANNEL_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i), { target: { value: VALID_VIDEO_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i), { target: { value: VALID_CHANNEL_URL } });
 
       fireEvent.submit(screen.getByRole('dialog').querySelector('form'));
 
@@ -264,8 +354,8 @@ describe('ContributionForm', () => {
 
       renderForm();
 
-      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch/i), { target: { value: VALID_VIDEO_URL } });
-      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@/i), { target: { value: VALID_CHANNEL_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i), { target: { value: VALID_VIDEO_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i), { target: { value: VALID_CHANNEL_URL } });
 
       fireEvent.submit(screen.getByRole('dialog').querySelector('form'));
 
@@ -279,8 +369,8 @@ describe('ContributionForm', () => {
 
       renderForm();
 
-      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch/i), { target: { value: VALID_VIDEO_URL } });
-      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@/i), { target: { value: VALID_CHANNEL_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i), { target: { value: VALID_VIDEO_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i), { target: { value: VALID_CHANNEL_URL } });
 
       fireEvent.submit(screen.getByRole('dialog').querySelector('form'));
 
@@ -296,8 +386,8 @@ describe('ContributionForm', () => {
 
       renderForm();
 
-      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch/i), { target: { value: VALID_VIDEO_URL } });
-      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@/i), { target: { value: VALID_CHANNEL_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i), { target: { value: VALID_VIDEO_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i), { target: { value: VALID_CHANNEL_URL } });
 
       fireEvent.submit(screen.getByRole('dialog').querySelector('form'));
 
@@ -328,8 +418,8 @@ describe('ContributionForm', () => {
       }));
 
       renderForm();
-      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch/i), { target: { value: VALID_VIDEO_URL } });
-      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@/i), { target: { value: VALID_CHANNEL_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i), { target: { value: VALID_VIDEO_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i), { target: { value: VALID_CHANNEL_URL } });
 
       const submitBtn = screen.getByRole('button', { name: /wyślij|send proposal/i });
       if (!window.location.hostname.includes('localhost')) {
@@ -343,8 +433,8 @@ describe('ContributionForm', () => {
       }));
 
       renderForm();
-      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch/i), { target: { value: VALID_VIDEO_URL } });
-      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@/i), { target: { value: VALID_CHANNEL_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i), { target: { value: VALID_VIDEO_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i), { target: { value: VALID_CHANNEL_URL } });
 
       await waitFor(() => {
         const submitBtn = screen.getByRole('button', { name: /wyślij|send proposal/i });

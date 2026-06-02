@@ -57,6 +57,7 @@ const translations = {
     formSuccess: 'Dziękujemy! Propozycja została wysłana.',
     formError: 'Coś poszło nie tak. Spróbuj ponownie lub skorzystaj z GitHub.',
     formOrDiscussion: 'Wolisz GitHub? Otwórz dyskusję',
+    formSubmitCount: 'Wykorzystany limit: {used} / 5',
     close: 'Zamknij',
   },
   en: {
@@ -109,6 +110,7 @@ const translations = {
     formSuccess: 'Thank you! Your proposal has been sent.',
     formError: 'Something went wrong. Please try again or use GitHub.',
     formOrDiscussion: 'Prefer GitHub? Open a discussion',
+    formSubmitCount: 'Submitted: {used} / 5',
     close: 'Close',
   },
 };
