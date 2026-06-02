@@ -1,0 +1,24 @@
+[
+    {
+        "id": "bez-recepty-1",
+        "type": "podcast",
+        "title": "Dlaczego wyrzuciliśmy z domu telewizor i oleje roślinne? Nasza codzienna higiena życia",
+        "url": "https://www.youtube.com/watch?v=xCHPgSimbLU",
+        "language": "PL",
+        "author": {
+            "name": "Bez Recepty",
+            "channelUrl": "https://www.youtube.com/@BezRecepty"
+        },
+        "guests": [
+            "Andrzej Kawka",
+            "Sebastian Zachara"
+        ],
+        "topics": [
+            "routine",
+            "habits",
+            "lifestyle",
+            "hygiene"
+        ],
+        "series": null
+    }
+]

@@ -1,16 +1,26 @@
 [
-  {
-    "id": "kierunek-zdrowie-1",
-    "type": "podcast",
-    "title": "To nie cholesterol jest problemem?! Wątroba kocha tłuszcz",
-    "url": "https://www.youtube.com/watch?v=38OOz3xmOp4",
-    "language": "PL",
-    "author": {
-      "name": "kierunek zdrowie",
-      "channelUrl": "https://www.youtube.com/@kierunekzdrowie1074"
-    },
-    "guests": ["Sylwia Suchanek", "Magdalena Gallus"],
-    "topics": ["liver", "cholesterol", "metabolism", "diet", "hormones", "fat"],
-    "series": null
-  }
+    {
+        "id": "kierunek-zdrowie-1",
+        "type": "podcast",
+        "title": "To nie cholesterol jest problemem?! Wątroba kocha tłuszcz",
+        "url": "https://www.youtube.com/watch?v=38OOz3xmOp4",
+        "language": "PL",
+        "author": {
+            "name": "kierunek zdrowie",
+            "channelUrl": "https://www.youtube.com/@kierunekzdrowie1074"
+        },
+        "guests": [
+            "Sylwia Suchanek",
+            "Magdalena Gallus"
+        ],
+        "topics": [
+            "liver",
+            "cholesterol",
+            "metabolism",
+            "diet",
+            "hormones",
+            "fat"
+        ],
+        "series": null
+    }
 ]

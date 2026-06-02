@@ -9,8 +9,15 @@
       "name": "Bartosz Czekała",
       "channelUrl": "https://www.youtube.com/@BartoszCzekala"
     },
-    "guests": ["Bartosz Czekała"],
-    "topics": ["lifestyle", "fasting", "yoyo_effect", "metabolism"],
+    "guests": [
+      "Bartosz Czekała"
+    ],
+    "topics": [
+      "lifestyle",
+      "fasting",
+      "yoyo_effect",
+      "metabolism"
+    ],
     "series": null
   }
 ]
