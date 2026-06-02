@@ -13,6 +13,7 @@ const IS_LOCALHOST = window.location.hostname === 'localhost' || window.location
 const SKIP_CAPTCHA = IS_LOCALHOST;
 
 const DEMO_DATA = {
+  id: 'edward-breadcrumb-1',
   type: 'video',
   title: 'Carnivore guide for carnivore carnivores',
   url: 'https://www.youtube.com/watch?v=12345abcde',
@@ -27,6 +28,7 @@ const DEMO_DATA = {
 };
 
 const EMPTY = {
+  id: 'placeholder-id',
   type: 'video',
   title: '',
   url: '',
@@ -98,6 +100,15 @@ export default function ContributionForm({ open, onClose }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
+  useEffect(() => {
+    if (status !== 'success') return;
+    const timer = setTimeout(() => {
+      setStatus('idle');
+      setHcaptchaToken(null);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [status]);
+
   if (!open) return null;
 
   const set = (key) => (e) => {
@@ -136,6 +147,7 @@ export default function ContributionForm({ open, onClose }) {
   };
 
   const buildEntry = () => ({
+    id: form.id.trim(),
     type: form.type,
     title: form.title.trim(),
     url: form.url.trim(),
