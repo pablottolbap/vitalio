@@ -11,6 +11,20 @@ const HCAPTCHA_SITEKEY = import.meta.env.VITE_HCAPTCHA_SITEKEY || 'YOUR_HCAPTCHA
 const STORAGE_KEY_SUBMISSIONS = 'vitalio-form-submissions';
 const IS_LOCALHOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
+const DEMO_DATA = {
+  type: 'video',
+  title: 'Carnivore guide for carnivore carnivores',
+  url: 'https://www.youtube.com/watch?v=12345abcde',
+  language: 'EN',
+  authorName: 'Edward Breadcrumb',
+  authorChannelUrl: 'https://www.youtube.com/@eddybready',
+  guests: 'Paul Vegetable, Bart Fruit',
+  topics: 'carnivore, diet, nutrition, health',
+  seriesName: 'Carnivore Carnivores',
+  seriesOrder: '1',
+  email: 'test@example.com',
+};
+
 const EMPTY = {
   type: 'video',
   title: '',
@@ -51,7 +65,7 @@ const recordSubmission = () => {
 export default function ContributionForm({ open, onClose }) {
   const { t } = useLanguage();
   const { theme, isDark } = useTheme();
-  const [form, setForm] = useState(EMPTY);
+  const [form, setForm] = useState(import.meta.env.DEV ? DEMO_DATA : EMPTY);
   const [status, setStatus] = useState('idle'); // idle | sending | success | error | daily_limit
   const [hcaptchaToken, setHcaptchaToken] = useState(null);
   const [cooldown, setCooldown] = useState(0);
@@ -71,6 +85,10 @@ export default function ContributionForm({ open, onClose }) {
     const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
     return () => clearTimeout(timer);
   }, [cooldown]);
+
+  useEffect(() => {
+    console.log('[ContributionForm] hcaptchaToken state updated:', hcaptchaToken);
+  }, [hcaptchaToken]);
 
   useEffect(() => {
     if (!open) return;
@@ -375,14 +393,22 @@ export default function ContributionForm({ open, onClose }) {
               <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}>
                 <HCaptcha
                   sitekey={HCAPTCHA_SITEKEY}
-                  onVerify={(token) => setHcaptchaToken(token.response)}
+                  onVerify={(token) => {
+                    console.log('[hCaptcha] Verification response:', token);
+                    const tokenValue = typeof token === 'string' ? token : token?.response;
+                    console.log('[hCaptcha] Token value:', tokenValue);
+                    setHcaptchaToken(tokenValue || null);
+                  }}
+                  onError={(error) => {
+                    console.error('[hCaptcha] Error:', error);
+                  }}
                   theme={isDark ? 'dark' : 'light'}
                 />
               </div>
             )}
             {IS_LOCALHOST && (
               <p style={{ fontSize: '0.85em', color: theme.muted, textAlign: 'center', marginBottom: '16px', fontStyle: 'italic' }}>
-                🔓 Turnstile skipped in development mode
+                🔓 hCaptcha skipped in development mode
               </p>
             )}
 
