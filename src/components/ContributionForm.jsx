@@ -396,7 +396,7 @@ export default function ContributionForm({ open, onClose }) {
               style={{
                 width: '100%', padding: '10px', borderRadius: '6px', border: 'none',
                 background: theme.accent, color: '#fff', fontWeight: 'bold', fontSize: '0.95em',
-                cursor: (status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !turnstileToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 'not-allowed' : 'pointer',
+                cursor: (status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 'not-allowed' : 'pointer',
                 opacity: (status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 0.6 : 1,
               }}
             >
