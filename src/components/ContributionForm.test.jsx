@@ -5,7 +5,9 @@ import ContributionForm from './ContributionForm.jsx';
 import { LanguageProvider } from '../i18n.jsx';
 import { ThemeProvider } from '../theme.jsx';
 
-vi.mock('react-turnstile', () => ({ Turnstile: () => null }));
+vi.mock('@hcaptcha/react-hcaptcha', () => ({
+  default: () => null,
+}));
 
 function renderForm(props = {}) {
   const onClose = props.onClose ?? vi.fn();
@@ -412,7 +414,7 @@ describe('ContributionForm', () => {
   });
 
   describe('form submit button states', () => {
-    it('disables submit button when Turnstile token is missing (non-localhost)', async () => {
+    it('enables submit button after hCaptcha token is received', async () => {
       vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
         json: vi.fn().mockResolvedValue({ success: true }),
       }));
@@ -421,10 +423,10 @@ describe('ContributionForm', () => {
       fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i), { target: { value: VALID_VIDEO_URL } });
       fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i), { target: { value: VALID_CHANNEL_URL } });
 
-      const submitBtn = screen.getByRole('button', { name: /wyślij|send proposal/i });
-      if (!window.location.hostname.includes('localhost')) {
-        expect(submitBtn).toBeDisabled();
-      }
+      await waitFor(() => {
+        const submitBtn = screen.getByRole('button', { name: /wyślij|send proposal/i });
+        expect(submitBtn).not.toBeDisabled();
+      });
     });
 
     it('completes submission with valid URLs', async () => {
