@@ -8,24 +8,41 @@ import logo from './assets/logo.png';
 import { useLanguage } from './i18n.jsx';
 import { useTheme } from './theme.jsx';
 
-// Lokalne dane testowe (mock) — plik jest git-ignorowany i nieobecny na produkcji.
-// import.meta.glob z eager:true wczytuje go tylko jeśli istnieje, więc build
-// w CI (bez tego pliku) po prostu pomija mocka i nie zanieczyszcza data.json.
+/**
+ * Lokalne dane testowe (mock) — plik jest git-ignorowany i nieobecny na produkcji.
+ * import.meta.glob z eager:true wczytuje go tylko jeśli istnieje, więc build
+ * w CI (bez tego pliku) po prostu pomija mocka i nie zanieczyszcza data.json.
+ */
 const mockModules = import.meta.glob('./mock.local.json', { eager: true });
 const mockData = Object.values(mockModules).flatMap(mod => mod.default || []);
 const allData = [...rawData, ...mockData];
 
+/**
+ * Main App component — displays filtered video/podcast library with sidebar and contribution form
+ * @returns {React.ReactElement}
+ */
 export default function App() {
   const { lang, setLang, t } = useLanguage();
   const { theme, isDark, toggleTheme } = useTheme();
+
+  // Filter states
+  /** @type {[string|null, Function]} - Currently selected channel author name */
   const [activeChannel, setActiveChannel] = useState(null);
+  /** @type {[string|null, Function]} - Currently selected guest/person */
   const [activePerson, setActivePerson] = useState(null);
+  /** @type {[string|null, Function]} - Currently selected topic */
   const [activeTopic, setActiveTopic] = useState(null);
+  /** @type {[string|null, Function]} - Currently selected series name */
   const [activeSeries, setActiveSeries] = useState(null);
+  /** @type {[string|null, Function]} - Currently selected language code (PL/EN) */
   const [activeLanguage, setActiveLanguage] = useState(null);
+  /** @type {[boolean, Function]} - Whether contribution form dialog is open */
   const [showContribute, setShowContribute] = useState(false);
 
+  // Infinite scroll state
+  /** @type {[number, Function]} - Number of items visible (for lazy loading) */
   const [visibleCount, setVisibleCount] = useState(10);
+  /** @type {React.MutableRefObject<HTMLDivElement|null>} - Intersection observer anchor element */
   const observerRef = useRef(null);
 
   useEffect(() => {

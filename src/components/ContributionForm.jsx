@@ -12,7 +12,24 @@ const STORAGE_KEY_SUBMISSIONS = 'vitalio-form-submissions';
 const IS_LOCALHOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const SKIP_CAPTCHA = IS_LOCALHOST;
 
+/**
+ * @typedef {Object} FormData
+ * @property {string} id - Unique identifier for the submission
+ * @property {string} type - Content type: 'video', 'podcast', or 'qa'
+ * @property {string} title - Content title/name
+ * @property {string} url - Content URL (YouTube video or podcast link)
+ * @property {string} language - Language code: 'PL' or 'EN'
+ * @property {string} authorName - Creator/author name
+ * @property {string} authorChannelUrl - Channel/creator URL
+ * @property {string} guests - Comma-separated guest names
+ * @property {string} topics - Comma-separated topic tags
+ * @property {string} seriesName - Optional series name
+ * @property {string} seriesOrder - Optional episode number
+ * @property {string} email - Contact email for follow-up
+ */
+
 const DEMO_DATA = {
+  id: 'edward-breadcrumb-1',
   type: 'video',
   title: 'Carnivore guide for carnivore carnivores',
   url: 'https://www.youtube.com/watch?v=12345abcde',
@@ -27,6 +44,7 @@ const DEMO_DATA = {
 };
 
 const EMPTY = {
+  id: 'placeholder-id',
   type: 'video',
   title: '',
   url: '',
@@ -40,6 +58,10 @@ const EMPTY = {
   email: '',
 };
 
+/**
+ * Get count of submissions made today from localStorage
+ * @returns {string[]} Array of ISO timestamp strings for today's submissions
+ */
 const getSubmissionsToday = () => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY_SUBMISSIONS);
@@ -52,6 +74,10 @@ const getSubmissionsToday = () => {
   }
 };
 
+/**
+ * Record a new submission timestamp in localStorage (keeps last 50 entries)
+ * @returns {void}
+ */
 const recordSubmission = () => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY_SUBMISSIONS) || '[]';
@@ -63,14 +89,29 @@ const recordSubmission = () => {
   }
 };
 
+/**
+ * Modal form for submitting new video/podcast/QA content
+ * @component
+ * @param {Object} props
+ * @param {boolean} props.open - Whether the dialog is visible
+ * @param {Function} props.onClose - Callback when user closes the dialog
+ * @returns {React.ReactElement}
+ */
 export default function ContributionForm({ open, onClose }) {
   const { t } = useLanguage();
   const { theme, isDark } = useTheme();
+
+  /** @type {[FormData, Function]} - Form field values */
   const [form, setForm] = useState(import.meta.env.DEV ? DEMO_DATA : EMPTY);
-  const [status, setStatus] = useState('idle'); // idle | sending | success | error | daily_limit
+  /** @type {[string, Function]} - Form state: 'idle' | 'sending' | 'success' | 'error' | 'daily_limit' */
+  const [status, setStatus] = useState('idle');
+  /** @type {[string|null, Function]} - hCaptcha verification token */
   const [hcaptchaToken, setHcaptchaToken] = useState(null);
+  /** @type {[number, Function]} - Cooldown timer in seconds (prevents rapid resubmission) */
   const [cooldown, setCooldown] = useState(0);
+  /** @type {[boolean, Function]} - Whether user has reached 5 submissions today */
   const [dailyLimitReached, setDailyLimitReached] = useState(false);
+  /** @type {[Object<string,string|null>, Function]} - Validation error messages for URL fields */
   const [urlErrors, setUrlErrors] = useState({});
 
   useEffect(() => {
@@ -97,6 +138,15 @@ export default function ContributionForm({ open, onClose }) {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
+
+  useEffect(() => {
+    if (status !== 'success') return;
+    const timer = setTimeout(() => {
+      setStatus('idle');
+      setHcaptchaToken(null);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [status]);
 
   if (!open) return null;
 
@@ -136,6 +186,7 @@ export default function ContributionForm({ open, onClose }) {
   };
 
   const buildEntry = () => ({
+    id: form.id.trim(),
     type: form.type,
     title: form.title.trim(),
     url: form.url.trim(),
