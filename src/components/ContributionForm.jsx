@@ -179,6 +179,7 @@ export default function ContributionForm({ open, onClose }) {
         setTurnstileToken(null);
         setCooldown(30);
       } else {
+        console.error('[web3forms] submission failed:', data);
         setStatus('error');
       }
     } catch {
