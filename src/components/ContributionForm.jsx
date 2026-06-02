@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Turnstile } from 'react-turnstile';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { useLanguage } from '../i18n.jsx';
 import { useTheme } from '../theme.jsx';
 import Flag from './Flag';
@@ -7,7 +7,7 @@ import { splitList, validateVideoUrl, validateChannelUrl, normalizeVideoUrl, nor
 
 const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || 'YOUR_WEB3FORMS_ACCESS_KEY';
 const DISCUSSION_URL = 'https://github.com/pablottolbap/vitalio/discussions/new?category=new-materials-request';
-const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_KEY || 'YOUR_TURNSTILE_KEY';
+const HCAPTCHA_SITEKEY = import.meta.env.VITE_HCAPTCHA_SITEKEY || 'YOUR_HCAPTCHA_SITEKEY';
 const STORAGE_KEY_SUBMISSIONS = 'vitalio-form-submissions';
 const IS_LOCALHOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
@@ -53,7 +53,7 @@ export default function ContributionForm({ open, onClose }) {
   const { theme, isDark } = useTheme();
   const [form, setForm] = useState(EMPTY);
   const [status, setStatus] = useState('idle'); // idle | sending | success | error | daily_limit
-  const [turnstileToken, setTurnstileToken] = useState(null);
+  const [hcaptchaToken, setHcaptchaToken] = useState(null);
   const [cooldown, setCooldown] = useState(0);
   const [dailyLimitReached, setDailyLimitReached] = useState(false);
   const [urlErrors, setUrlErrors] = useState({});
@@ -135,7 +135,7 @@ export default function ContributionForm({ open, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (e.target.botcheck && e.target.botcheck.checked) return;
-    if (!IS_LOCALHOST && !turnstileToken) {
+    if (!IS_LOCALHOST && !hcaptchaToken) {
       setStatus('error');
       return;
     }
@@ -161,8 +161,8 @@ export default function ContributionForm({ open, onClose }) {
       message: JSON.stringify(entry, null, 2),
     };
 
-    if (!IS_LOCALHOST && turnstileToken) {
-      payload['cf-turnstile-response'] = turnstileToken;
+    if (!IS_LOCALHOST && hcaptchaToken) {
+      payload['h-captcha-response'] = hcaptchaToken;
     }
 
     try {
@@ -176,7 +176,7 @@ export default function ContributionForm({ open, onClose }) {
         recordSubmission();
         setStatus('success');
         setForm(EMPTY);
-        setTurnstileToken(null);
+        setHcaptchaToken(null);
         setCooldown(30);
       } else {
         console.error('[web3forms] submission failed:', data);
@@ -373,9 +373,9 @@ export default function ContributionForm({ open, onClose }) {
 
             {!IS_LOCALHOST && (
               <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}>
-                <Turnstile
-                  sitekey={TURNSTILE_SITE_KEY}
-                  onVerify={(token) => setTurnstileToken(token)}
+                <HCaptcha
+                  sitekey={HCAPTCHA_SITEKEY}
+                  onVerify={(token) => setHcaptchaToken(token.response)}
                   theme={isDark ? 'dark' : 'light'}
                 />
               </div>
@@ -392,12 +392,12 @@ export default function ContributionForm({ open, onClose }) {
 
             <button
               type="submit"
-              disabled={status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !turnstileToken) || urlErrors.url || urlErrors.authorChannelUrl}
+              disabled={status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl}
               style={{
                 width: '100%', padding: '10px', borderRadius: '6px', border: 'none',
                 background: theme.accent, color: '#fff', fontWeight: 'bold', fontSize: '0.95em',
-                cursor: (status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !turnstileToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 'not-allowed' : 'pointer',
-                opacity: (status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !turnstileToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 0.6 : 1,
+                cursor: (status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 'not-allowed' : 'pointer',
+                opacity: (status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 0.6 : 1,
               }}
             >
               {cooldown > 0
