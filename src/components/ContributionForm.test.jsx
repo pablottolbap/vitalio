@@ -443,6 +443,51 @@ describe('ContributionForm', () => {
         expect(submitBtn).toBeInTheDocument();
       });
     });
+
+    it('auto-resets form after successful submission', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        json: vi.fn().mockResolvedValue({ success: true }),
+      }));
+
+      renderForm();
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i), { target: { value: VALID_VIDEO_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i), { target: { value: VALID_CHANNEL_URL } });
+
+      fireEvent.submit(screen.getByRole('dialog').querySelector('form'));
+
+      await waitFor(() =>
+        expect(screen.getByText(/dziękujemy|thank you/i)).toBeInTheDocument(),
+        { timeout: 3000 }
+      );
+
+      await waitFor(() => {
+        expect(screen.queryByText(/dziękujemy|thank you/i)).not.toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i).value).toBe('');
+      }, { timeout: 5000 });
+    });
+
+    it('sends id field in submitted payload', async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        json: vi.fn().mockResolvedValue({ success: true }),
+      });
+      vi.stubGlobal('fetch', fetchMock);
+
+      renderForm();
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch.*youtu\.be/i), { target: { value: VALID_VIDEO_URL } });
+      fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/@.*youtube\.com/i), { target: { value: VALID_CHANNEL_URL } });
+
+      fireEvent.submit(screen.getByRole('dialog').querySelector('form'));
+
+      await waitFor(() =>
+        expect(fetchMock).toHaveBeenCalled(),
+        { timeout: 3000 }
+      );
+
+      const payload = JSON.parse(fetchMock.mock.calls[0][1].body);
+      const entry = JSON.parse(payload.message);
+      expect(entry).toHaveProperty('id');
+      expect(entry.id).toBeTruthy();
+    });
   });
 
 });
