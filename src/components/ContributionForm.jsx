@@ -7,9 +7,10 @@ import { splitList, validateVideoUrl, validateChannelUrl, normalizeVideoUrl, nor
 
 const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || 'YOUR_WEB3FORMS_ACCESS_KEY';
 const DISCUSSION_URL = 'https://github.com/pablottolbap/vitalio/discussions/new?category=new-materials-request';
-const HCAPTCHA_SITEKEY = import.meta.env.VITE_HCAPTCHA_SITEKEY || 'YOUR_HCAPTCHA_SITEKEY';
+const HCAPTCHA_SITEKEY = '50b2fe65-b00b-4b9e-ad62-3ba471098be2';
 const STORAGE_KEY_SUBMISSIONS = 'vitalio-form-submissions';
 const IS_LOCALHOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const SKIP_CAPTCHA = IS_LOCALHOST;
 
 const DEMO_DATA = {
   type: 'video',
@@ -153,7 +154,7 @@ export default function ContributionForm({ open, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (e.target.botcheck && e.target.botcheck.checked) return;
-    if (!IS_LOCALHOST && !hcaptchaToken) {
+    if (!SKIP_CAPTCHA && !hcaptchaToken) {
       setStatus('error');
       return;
     }
@@ -179,7 +180,7 @@ export default function ContributionForm({ open, onClose }) {
       message: JSON.stringify(entry, null, 2),
     };
 
-    if (!IS_LOCALHOST && hcaptchaToken) {
+    if (!SKIP_CAPTCHA && hcaptchaToken) {
       payload['h-captcha-response'] = hcaptchaToken;
     }
 
@@ -389,7 +390,7 @@ export default function ContributionForm({ open, onClose }) {
               <input type="email" value={form.email} onChange={set('email')} style={inputStyle} />
             </div>
 
-            {!IS_LOCALHOST && (
+            {!SKIP_CAPTCHA && (
               <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}>
                 <HCaptcha
                   sitekey={HCAPTCHA_SITEKEY}
@@ -406,7 +407,7 @@ export default function ContributionForm({ open, onClose }) {
                 />
               </div>
             )}
-            {IS_LOCALHOST && (
+            {SKIP_CAPTCHA && (
               <p style={{ fontSize: '0.85em', color: theme.muted, textAlign: 'center', marginBottom: '16px', fontStyle: 'italic' }}>
                 🔓 hCaptcha skipped in development mode
               </p>
@@ -418,12 +419,12 @@ export default function ContributionForm({ open, onClose }) {
 
             <button
               type="submit"
-              disabled={status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl}
+              disabled={status === 'sending' || cooldown > 0 || (!SKIP_CAPTCHA && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl}
               style={{
                 width: '100%', padding: '10px', borderRadius: '6px', border: 'none',
                 background: theme.accent, color: '#fff', fontWeight: 'bold', fontSize: '0.95em',
-                cursor: (status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 'not-allowed' : 'pointer',
-                opacity: (status === 'sending' || cooldown > 0 || (!IS_LOCALHOST && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 0.6 : 1,
+                cursor: (status === 'sending' || cooldown > 0 || (!SKIP_CAPTCHA && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 'not-allowed' : 'pointer',
+                opacity: (status === 'sending' || cooldown > 0 || (!SKIP_CAPTCHA && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 0.6 : 1,
               }}
             >
               {cooldown > 0
