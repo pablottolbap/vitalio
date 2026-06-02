@@ -1,0 +1,45 @@
+[
+    {
+        "id": "anthony-chaffee-md-1",
+        "type": "video",
+        "title": "Why I Never Eat Carbs",
+        "url": "https://www.youtube.com/watch?v=Z-GDgMINkV4",
+        "language": "EN",
+        "author": {
+            "name": "Anthony Chaffee MD",
+            "channelUrl": "https://www.youtube.com/@anthonychaffeemd"
+        },
+        "guests": [
+            "Anthony Chaffee"
+        ],
+        "topics": [
+            "carbs",
+            "carnivore",
+            "nutrition",
+            "evolution"
+        ],
+        "series": null
+    },
+    {
+        "id": "anthony-chaffee-md-2",
+        "type": "video",
+        "title": "Eating Raw Meat Every Day on Carnivore: Safe or Stupid?",
+        "url": "https://www.youtube.com/watch?v=aZVa5PfhvX0",
+        "language": "EN",
+        "author": {
+            "name": "Anthony Chaffee MD",
+            "channelUrl": "https://www.youtube.com/@anthonychaffeemd"
+        },
+        "guests": [
+            "Anthony Chaffee"
+        ],
+        "topics": [
+            "diet",
+            "meat",
+            "carnivore",
+            "nutrition",
+            "evolution"
+        ],
+        "series": null
+    }    
+]

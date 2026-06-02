@@ -9,8 +9,16 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["nutrition", "basics", "evolution", "diet"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "nutrition",
+      "basics",
+      "evolution",
+      "diet"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 1
@@ -26,8 +34,18 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["nutrition", "fruits", "sugar", "diet", "fat", "proteins"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "nutrition",
+      "fruits",
+      "sugar",
+      "diet",
+      "fat",
+      "proteins"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 2
@@ -43,8 +61,16 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["nutrition", "bread", "grains", "diet"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "nutrition",
+      "bread",
+      "grains",
+      "diet"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 3
@@ -60,8 +86,13 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["qa"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "qa"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 4
@@ -77,8 +108,15 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["nutrition", "vegetables", "diet"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "nutrition",
+      "vegetables",
+      "diet"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 5
@@ -94,8 +132,16 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["nutrition", "fats", "metabolism", "diet"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "nutrition",
+      "fats",
+      "metabolism",
+      "diet"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 6
@@ -111,8 +157,13 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["qa"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "qa"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 7
@@ -128,8 +179,13 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["qa"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "qa"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 8
@@ -145,8 +201,17 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["habits", "caffeine", "coffee", "tea", "cortisol"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "habits",
+      "caffeine",
+      "coffee",
+      "tea",
+      "cortisol"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 9
@@ -162,8 +227,13 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["qa"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "qa"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 10
@@ -179,8 +249,17 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["herbs", "oxalates", "salicylates ", "histamine", "diet"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "herbs",
+      "oxalates",
+      "salicylates ",
+      "histamine",
+      "diet"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 11
@@ -196,8 +275,13 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["qa"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "qa"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 12
@@ -213,8 +297,17 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["mushrooms", "superfoods", "nutrition", "diet", "toxins"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "mushrooms",
+      "superfoods",
+      "nutrition",
+      "diet",
+      "toxins"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 13
@@ -230,8 +323,13 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["qa"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "qa"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 14
@@ -247,8 +345,18 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["dairy", "casein", "nutrition", "diet", "calcium", "evolution"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "dairy",
+      "casein",
+      "nutrition",
+      "diet",
+      "calcium",
+      "evolution"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 15
@@ -264,11 +372,44 @@
       "name": "Karol Kus Masz To W Lesie",
       "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
     },
-    "guests": ["Karol Kus", "Jacek Safuta"],
-    "topics": ["dairy", "casein", "nutrition", "diet"],
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "dairy",
+      "casein",
+      "nutrition",
+      "diet"
+    ],
     "series": {
       "name": "Co jeść doktorku?",
       "order": 16
     }
-  }  
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-17",
+    "type": "podcast",
+    "title": "Co jeść doktorku? | Nabiał cz. 3: Zostawić czy odstawić? Podsumowanie, którego szukałeś",
+    "url": "https://www.youtube.com/watch?v=SVYgVLQngrs",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "dairy",
+      "casein",
+      "nutrition",
+      "diet"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 17
+    }
+  }
 ]

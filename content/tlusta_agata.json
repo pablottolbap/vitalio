@@ -9,8 +9,15 @@
       "name": "Tłusta Agata",
       "channelUrl": "https://www.youtube.com/@tustaagata3614"
     },
-    "guests": ["Agata Jurkowska"],
-    "topics": ["diet", "carnivore", "basics", "how_to"],
+    "guests": [
+      "Agata Jurkowska"
+    ],
+    "topics": [
+      "diet",
+      "carnivore",
+      "basics",
+      "how_to"
+    ],
     "series": null
   }
 ]
