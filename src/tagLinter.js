@@ -67,10 +67,11 @@ function getVariants(tag) {
 /**
  * Find inflection conflicts in tag set
  * @param {string[]} tags - Array of tags to check
+ * @param {Object[]} [data] - Full data array with items. If provided, will track affected items.
  * @returns {Object[]} Array of conflict objects with structure:
- *   { tag1, tag2, type: 'plural'|'gerund'|'comparative' }
+ *   { tag1, tag2, type: 'plural'|'gerund'|'comparative', affectedItems?: { tag1: [], tag2: [] } }
  */
-export function findTagConflicts(tags) {
+export function findTagConflicts(tags, data = []) {
   const conflicts = [];
   const reported = new Set(); // Track reported pairs to avoid duplicates
 
@@ -95,11 +96,27 @@ export function findTagConflicts(tags) {
         type = 'comparative';
       }
 
-      conflicts.push({
+      const conflict = {
         tag1: tag,
         tag2: variant,
         type,
-      });
+      };
+
+      // If data provided, track which items use each tag
+      if (data.length > 0) {
+        const items1 = data
+          .filter(item => item.topics && item.topics.includes(tag))
+          .map(item => ({ id: item.id, title: item.title }));
+        const items2 = data
+          .filter(item => item.topics && item.topics.includes(variant))
+          .map(item => ({ id: item.id, title: item.title }));
+
+        if (items1.length > 0 || items2.length > 0) {
+          conflict.affectedItems = { [tag]: items1, [variant]: items2 };
+        }
+      }
+
+      conflicts.push(conflict);
     }
   }
 
@@ -126,8 +143,18 @@ export function formatConflicts(conflicts) {
 
   for (const [type, items] of Object.entries(byType)) {
     report += `${type.toUpperCase()}\n`;
-    for (const { tag1, tag2 } of items) {
+    for (const { tag1, tag2, affectedItems } of items) {
       report += `  • "${tag1}" ↔ "${tag2}"\n`;
+
+      // Show affected items if available
+      if (affectedItems) {
+        if (affectedItems[tag1] && affectedItems[tag1].length > 0) {
+          report += `    ${tag1} (${affectedItems[tag1].length}): ${affectedItems[tag1].map(i => `${i.title} (${i.id})`).join(', ')}\n`;
+        }
+        if (affectedItems[tag2] && affectedItems[tag2].length > 0) {
+          report += `    ${tag2} (${affectedItems[tag2].length}): ${affectedItems[tag2].map(i => `${i.title} (${i.id})`).join(', ')}\n`;
+        }
+      }
     }
     report += '\n';
   }

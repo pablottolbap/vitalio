@@ -69,6 +69,21 @@ describe('tagLinter', () => {
       const conflicts = findTagConflicts(tags);
       expect(conflicts.length).toBe(2);
     });
+
+    it('tracks affected items when data is provided', () => {
+      const tags = ['fat', 'fats'];
+      const data = [
+        { id: 'v1', title: 'Video One', topics: ['fat'] },
+        { id: 'v2', title: 'Video Two', topics: ['fats'] },
+      ];
+      const conflicts = findTagConflicts(tags, data);
+      expect(conflicts.length).toBe(1);
+      expect(conflicts[0].affectedItems).toBeDefined();
+      expect(conflicts[0].affectedItems.fat.length).toBe(1);
+      expect(conflicts[0].affectedItems.fats.length).toBe(1);
+      expect(conflicts[0].affectedItems.fat[0].id).toBe('v1');
+      expect(conflicts[0].affectedItems.fats[0].id).toBe('v2');
+    });
   });
 
   describe('formatConflicts', () => {
@@ -103,6 +118,25 @@ describe('tagLinter', () => {
       ];
       const result = formatConflicts(conflicts);
       expect(result).toContain('2');
+    });
+
+    it('displays affected items with IDs and titles', () => {
+      const conflicts = [
+        {
+          tag1: 'fat',
+          tag2: 'fats',
+          type: 'plural',
+          affectedItems: {
+            fat: [{ id: 'v1', title: 'Video One' }],
+            fats: [{ id: 'v2', title: 'Video Two' }],
+          },
+        },
+      ];
+      const result = formatConflicts(conflicts);
+      expect(result).toContain('fat (1)');
+      expect(result).toContain('fats (1)');
+      expect(result).toContain('Video One (v1)');
+      expect(result).toContain('Video Two (v2)');
     });
   });
 });

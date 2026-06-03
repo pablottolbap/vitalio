@@ -28,8 +28,8 @@ try {
   console.log('Tags:', tags.join(', '));
   console.log('\n' + '='.repeat(60) + '\n');
 
-  // Find conflicts
-  const conflicts = findTagConflicts(tags);
+  // Find conflicts and pass data to track affected items
+  const conflicts = findTagConflicts(tags, data);
   console.log(formatConflicts(conflicts));
 
   // Exit with error code if conflicts found (for CI)
