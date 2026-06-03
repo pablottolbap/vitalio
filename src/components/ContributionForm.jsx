@@ -113,8 +113,6 @@ export default function ContributionForm({ open, onClose }) {
   const [hcaptchaToken, setHcaptchaToken] = useState(null);
   /** @type {[number, Function]} - Cooldown timer in seconds (prevents rapid resubmission) */
   const [cooldown, setCooldown] = useState(0);
-  /** @type {[boolean, Function]} - Whether user has reached 5 submissions today */
-  const [dailyLimitReached, setDailyLimitReached] = useState(false);
   /** @type {[Object<string,string|null>, Function]} - Validation error messages for URL fields */
   const [urlErrors, setUrlErrors] = useState({});
   /** @type {[string|null, Function]} - Tag inflection conflict error message */
@@ -122,13 +120,7 @@ export default function ContributionForm({ open, onClose }) {
   /** @type {[string[], Function]} - Autocomplete suggestions for topic tags */
   const [tagSuggestions, setTagSuggestions] = useState([]);
 
-  useEffect(() => {
-    if (open) {
-      const todaySubmissions = getSubmissionsToday();
-      // eslint-disable-next-line react-hooks/set-state-in-effect — setDailyLimitReached is not a direct state update, it's a derived check from open prop
-      setDailyLimitReached(todaySubmissions.length >= 5);
-    }
-  }, [open]);
+  const dailyLimitReached = open && getSubmissionsToday().length >= 5;
 
   useEffect(() => {
     if (cooldown <= 0) return;

@@ -107,9 +107,8 @@ describe('App — structure', () => {
   });
 
   it('renders cards and sidebar with infinite scroll support', () => {
-    let ioCb;
     global.IntersectionObserver = class {
-      constructor(cb) { ioCb = cb; }
+      constructor() {}
       observe = vi.fn();
       disconnect = vi.fn();
     };
@@ -190,10 +189,9 @@ describe('App — filtering', () => {
 
 describe('App — infinite scroll', () => {
   it('observer is set up for infinite scroll', () => {
-    let ioCb;
     const observeMock = vi.fn();
     global.IntersectionObserver = class {
-      constructor(cb) { ioCb = cb; }
+      constructor() {}
       observe = observeMock;
       disconnect = vi.fn();
     };
