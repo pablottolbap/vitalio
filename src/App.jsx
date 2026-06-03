@@ -90,7 +90,10 @@ export default function App() {
 
   const uniqueChannelsWithUrls = Array.from(
     new Map(allData.map(item => [item.author.name, item.author.channelUrl])).entries()
-  ).map(([name, channelUrl]) => ({ name, channelUrl }))
+  ).map(([name, channelUrl]) => {
+    const count = allData.filter(item => item.author.name === name).length;
+    return { name, channelUrl, count };
+  })
    .sort((a, b) => a.name.localeCompare(b.name));
 
   const filteredMaterials = allData.filter(item => {
@@ -229,21 +232,26 @@ export default function App() {
           <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
             {uniqueChannelsWithUrls.map(channel => (
               <li key={channel.name} style={{ marginBottom: '12px' }}>
-                <a
-                  href={channel.channelUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{
-                    color: theme.link,
-                    textDecoration: 'none',
-                    fontSize: '0.95em',
-                    display: 'inline-block'
-                  }}
-                  onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
-                  onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
-                >
-                  📺 {channel.name}
-                </a>
+                <div>
+                  <a
+                    href={channel.channelUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      color: theme.link,
+                      textDecoration: 'none',
+                      fontSize: '0.95em',
+                      display: 'inline-block'
+                    }}
+                    onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
+                    onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
+                  >
+                    📺 {channel.name}
+                  </a>
+                </div>
+                <div style={{ fontSize: '0.8em', color: theme.muted, marginTop: '4px', paddingLeft: '20px' }}>
+                  {channel.count} {channel.count === 1 ? 'video' : 'videos'}
+                </div>
               </li>
             ))}
           </ul>
