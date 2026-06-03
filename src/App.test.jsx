@@ -1,9 +1,12 @@
 
-import { render, screen, fireEvent, within, act } from '@testing-library/react';
+import { render, screen, fireEvent, within, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { LanguageProvider } from './i18n.jsx';
 import { ThemeProvider } from './theme.jsx';
 import App from './App.jsx';
+
+// Mock Math.random to make shuffling deterministic in tests
+vi.spyOn(Math, 'random').mockReturnValue(0.5);
 
 vi.mock('./data.json', () => ({
   default: [
