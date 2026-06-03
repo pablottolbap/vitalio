@@ -347,16 +347,16 @@ describe('App — sorting', () => {
 });
 
 describe('App — sidebar counter', () => {
-  it('displays total video counter in sidebar', () => {
+  it('displays statistics panel in sidebar', () => {
     renderApp();
     const sidebar = screen.getByRole('complementary');
-    expect(within(sidebar).getByText(/filmy łącznie|total videos/i)).toBeInTheDocument();
+    expect(within(sidebar).getByText(/Statystyki|Statistics/i)).toBeInTheDocument();
   });
 
-  it('shows correct total count (12 items in fixture)', () => {
+  it('shows correct total materials count (12 items in fixture)', () => {
     renderApp();
     const sidebar = screen.getByRole('complementary');
-    const counter = within(sidebar).getByText(/filmy łącznie|total videos/i);
-    expect(counter.parentElement).toHaveTextContent('12');
+    const statsPanel = within(sidebar).getByText(/Statystyki|Statistics/i).closest('div');
+    expect(within(statsPanel).getByText(/Materiały|Materials/i).parentElement).toHaveTextContent('12');
   });
 });
