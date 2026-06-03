@@ -95,12 +95,12 @@ export default function VideoCard({ item, onChannelClick, onPersonClick, onTopic
       )}
 
       {item.topics && item.topics.length > 0 && (
-        <div style={{ marginTop: '10px' }}>
+        <div style={{ marginTop: '10px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {item.topics.map(topic => (
-            <span 
-              key={topic} 
+            <span
+              key={topic}
               onClick={() => onTopicClick(topic)}
-              style={{ fontSize: '0.85em', color: theme.accent, cursor: 'pointer', marginRight: '10px', textDecoration: 'underline' }}
+              style={{ fontSize: '0.85em', color: theme.accent, cursor: 'pointer', textDecoration: 'underline' }}
             >
               #{topic}
             </span>

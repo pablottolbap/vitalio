@@ -223,9 +223,32 @@ export default function App() {
         <img src={logo} alt="Vitalio" style={{ width: '400px', maxWidth: '100%', height: 'auto', maxHeight: '250px', objectFit: 'contain' }} />
       </header>
 
+      <style>{`
+        @media (max-width: 768px) {
+          .main-grid {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
+          }
+          footer {
+            padding-bottom: 70px !important;
+          }
+          footer > div > div:first-child {
+            padding-left: 10px !important;
+            padding-right: 10px !important;
+          }
+          header {
+            margin-bottom: 20px !important;
+          }
+          header img {
+            width: 300px !important;
+          }
+        }
+      `}</style>
+
       {/* Main content grid + sidebar */}
-      <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '30px', alignItems: 'start' }}>
-        
+      <div className="main-grid" style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '30px', alignItems: 'start' }}>
+
         {/* Filters and video cards */}
         <div>
           {/* Filter panel */}
@@ -362,6 +385,20 @@ export default function App() {
         zIndex: 100,
         boxShadow: '0 -2px 8px rgba(0,0,0,0.1)'
       }}>
+        <style>{`
+          @media (max-width: 768px) {
+            footer div > div > div {
+              grid-template-columns: 1fr 1fr !important;
+              gap: 12px !important;
+            }
+          }
+          @media (max-width: 480px) {
+            footer div > div > div {
+              grid-template-columns: 1fr !important;
+              gap: 10px !important;
+            }
+          }
+        `}</style>
         <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '20px', paddingRight: '20px' }}>
           <div style={{
             display: 'grid',
