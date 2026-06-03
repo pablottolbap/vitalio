@@ -129,7 +129,7 @@
       "fruits",
       "sugar",
       "diet",
-      "fat",
+      "fats",
       "proteins"
     ],
     "series": {
@@ -518,7 +518,7 @@
       "metabolism",
       "diet",
       "hormones",
-      "fat"
+      "fats"
     ],
     "series": null
   },
