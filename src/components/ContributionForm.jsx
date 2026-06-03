@@ -4,6 +4,9 @@ import { useLanguage } from '../i18n.jsx';
 import { useTheme } from '../theme.jsx';
 import Flag from './Flag';
 import { splitList, validateVideoUrl, validateChannelUrl, normalizeVideoUrl, normalizeChannelUrl } from '../validators.js';
+import { validateNewTags } from '../tagValidator.js';
+import { getTagSuggestions, applyTagSuggestion } from '../tagAutocomplete.js';
+import rawData from '../data.json';
 
 const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || 'YOUR_WEB3FORMS_ACCESS_KEY';
 const DISCUSSION_URL = 'https://github.com/pablottolbap/vitalio/discussions/new?category=new-materials-request';
@@ -113,6 +116,10 @@ export default function ContributionForm({ open, onClose }) {
   const [dailyLimitReached, setDailyLimitReached] = useState(false);
   /** @type {[Object<string,string|null>, Function]} - Validation error messages for URL fields */
   const [urlErrors, setUrlErrors] = useState({});
+  /** @type {[string|null, Function]} - Tag inflection conflict error message */
+  const [tagError, setTagError] = useState(null);
+  /** @type {[string[], Function]} - Autocomplete suggestions for topic tags */
+  const [tagSuggestions, setTagSuggestions] = useState([]);
 
   useEffect(() => {
     if (open) {
@@ -163,6 +170,18 @@ export default function ContributionForm({ open, onClose }) {
       const error = validateChannelUrl(value.trim());
       setUrlErrors(prev => ({ ...prev, authorChannelUrl: error }));
     }
+
+    // Validate tags on change
+    if (key === 'topics') {
+      const existingTags = [...new Set(rawData.flatMap(item => item.topics || []).filter(Boolean))]
+        .map(t => t.trim().toLowerCase());
+      const validation = validateNewTags(existingTags, value);
+      setTagError(validation.hasConflicts ? validation.message : null);
+
+      // Generate autocomplete suggestions
+      const suggestions = getTagSuggestions(value, existingTags);
+      setTagSuggestions(suggestions.suggestions);
+    }
   };
 
   const handleUrlBlur = () => {
@@ -183,6 +202,12 @@ export default function ContributionForm({ open, onClose }) {
         setForm((prev) => ({ ...prev, authorChannelUrl: result.normalized }));
       }
     }
+  };
+
+  const handleTagSuggestionClick = (suggestion) => {
+    const newTopics = applyTagSuggestion(form.topics, suggestion);
+    setForm((prev) => ({ ...prev, topics: newTopics }));
+    setTagSuggestions([]); // Clear suggestions after applying
   };
 
   const buildEntry = () => ({
@@ -216,6 +241,16 @@ export default function ContributionForm({ open, onClose }) {
 
     if (urlError || channelError) {
       setUrlErrors({ url: urlError, authorChannelUrl: channelError });
+      setStatus('error');
+      return;
+    }
+
+    // Validate tags before submission
+    const existingTags = [...new Set(rawData.flatMap(item => item.topics || []).filter(Boolean))]
+      .map(t => t.trim().toLowerCase());
+    const tagValidation = validateNewTags(existingTags, form.topics);
+    if (tagValidation.hasConflicts) {
+      setTagError(tagValidation.message);
       setStatus('error');
       return;
     }
@@ -418,6 +453,45 @@ export default function ContributionForm({ open, onClose }) {
             <div style={fieldStyle}>
               <label style={labelStyle}>{t('fldTopics')} <span style={hintStyle}>({t('fldTopicsHint')})</span></label>
               <input type="text" required placeholder="diet, carnivore, basics" value={form.topics} onChange={set('topics')} style={inputStyle} />
+              {tagError && <p style={{ color: '#dc3545', fontSize: '0.8em', margin: '4px 0 0 0' }}>{tagError}</p>}
+              {tagSuggestions.length > 0 && (
+                <div style={{
+                  position: 'absolute',
+                  background: theme.card,
+                  border: `1px solid ${theme.border}`,
+                  borderRadius: '6px',
+                  marginTop: '4px',
+                  maxHeight: '150px',
+                  overflowY: 'auto',
+                  zIndex: 10,
+                  width: '90%',
+                  maxWidth: 'calc(560px - 48px)',
+                }}>
+                  {tagSuggestions.map(suggestion => (
+                    <button
+                      key={suggestion}
+                      type="button"
+                      onClick={() => handleTagSuggestionClick(suggestion)}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        padding: '8px 12px',
+                        border: 'none',
+                        background: 'transparent',
+                        color: theme.link,
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        fontSize: '0.9em',
+                        borderBottom: `1px solid ${theme.border}`,
+                      }}
+                      onMouseEnter={(e) => e.target.style.background = theme.panel}
+                      onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                    >
+                      ✓ {suggestion}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div style={fieldStyle}>
@@ -470,11 +544,11 @@ export default function ContributionForm({ open, onClose }) {
 
             <button
               type="submit"
-              disabled={status === 'sending' || cooldown > 0 || (!SKIP_CAPTCHA && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl}
+              disabled={status === 'sending' || cooldown > 0 || (!SKIP_CAPTCHA && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl || tagError}
               style={{
                 width: '100%', padding: '10px', borderRadius: '6px', border: 'none',
                 background: theme.accent, color: '#fff', fontWeight: 'bold', fontSize: '0.95em',
-                cursor: (status === 'sending' || cooldown > 0 || (!SKIP_CAPTCHA && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 'not-allowed' : 'pointer',
+                cursor: (status === 'sending' || cooldown > 0 || (!SKIP_CAPTCHA && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl || tagError) ? 'not-allowed' : 'pointer',
                 opacity: (status === 'sending' || cooldown > 0 || (!SKIP_CAPTCHA && !hcaptchaToken) || urlErrors.url || urlErrors.authorChannelUrl) ? 0.6 : 1,
               }}
             >
