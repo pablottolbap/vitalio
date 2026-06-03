@@ -2,9 +2,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 /* eslint-disable react-refresh/only-export-components */
 
-// Lekki, bezzależnościowy system tłumaczeń interfejsu (PL/EN).
-// Tłumaczy WYŁĄCZNIE elementy interfejsu — tytuły materiałów pozostają
-// w swoim oryginalnym języku.
+// Lightweight dependency-free UI translation system (PL/EN).
+// Translates ONLY interface elements — material titles remain in their original language.
 
 const translations = {
   pl: {
@@ -129,13 +128,19 @@ const STORAGE_KEY = 'vitalio-ui-lang';
 
 const LanguageContext = createContext({ lang: 'pl', setLang: () => { }, t: (k) => k });
 
+/**
+ * Provides language context to the entire app.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components
+ * @returns {React.ReactElement} - Provider element wrapping children
+ */
 export function LanguageProvider({ children }) {
   const [lang, setLangState] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved === 'en' || saved === 'pl') return saved;
     } catch {
-      // localStorage niedostępny — używamy domyślnego języka
+      // localStorage unavailable — use default language
     }
     return 'pl';
   });
@@ -145,7 +150,7 @@ export function LanguageProvider({ children }) {
     try {
       localStorage.setItem(STORAGE_KEY, next);
     } catch {
-      // ignorujemy błędy zapisu
+      // Silently ignore write errors (localStorage may be full or unavailable)
     }
   };
 
@@ -162,6 +167,13 @@ export function LanguageProvider({ children }) {
   );
 }
 
+/**
+ * Hook to access language context.
+ * @returns {Object} Language context object
+ * @returns {string} .lang - Current language code ('pl' or 'en')
+ * @returns {Function} .setLang - Function to change language
+ * @returns {Function} .t - Translation function (key) => localized string
+ */
 export function useLanguage() {
   return useContext(LanguageContext);
 }

@@ -8,15 +8,18 @@ import logo from './assets/logo.png';
 import { useLanguage } from './i18n.jsx';
 import { useTheme } from './theme.jsx';
 
-/**
- * Lokalne dane testowe (mock) — plik jest git-ignorowany i nieobecny na produkcji.
- * import.meta.glob z eager:true wczytuje go tylko jeśli istnieje, więc build
- * w CI (bez tego pliku) po prostu pomija mocka i nie zanieczyszcza data.json.
- */
+// Local mock data (test-only) — this file is git-ignored and absent in production.
+// import.meta.glob with eager:true only loads it if it exists, so a CI build
+// (without this file) simply skips the mock and does not pollute data.json.
 const mockModules = import.meta.glob('./mock.local.json', { eager: true });
 const mockData = Object.values(mockModules).flatMap(mod => mod.default || []);
 const allData = [...rawData, ...mockData];
 
+/**
+ * Fisher-Yates shuffle — randomizes array order in-place.
+ * @param {Array} arr - Array to shuffle
+ * @returns {Array} - New shuffled copy of the array
+ */
 function shuffleArray(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -147,10 +150,10 @@ export default function App() {
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '1200px', margin: '0 auto', color: theme.text }}>
 
-      {/* PASEK STERUJĄCY: motyw + język interfejsu */}
+      {/* Control bar: theme toggle + UI language selector */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
 
-        {/* Przełącznik motywu */}
+        {/* Theme toggle button */}
         <button
           onClick={toggleTheme}
           title={isDark ? 'Tryb jasny' : 'Tryb ciemny'}
@@ -169,7 +172,7 @@ export default function App() {
           {isDark ? '☀️' : '🌙'}
         </button>
 
-        {/* Przełącznik języka interfejsu (flagi) */}
+        {/* UI language selector (flags) */}
         <div style={{ display: 'flex', gap: '6px' }}>
           {['pl', 'en'].map(code => (
             <button
@@ -196,17 +199,17 @@ export default function App() {
         </div>
       </div>
 
-      {/* LOGO */}
+      {/* Header with logo */}
       <header style={{ marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
         <img src={logo} alt="Vitalio" style={{ width: '400px', maxWidth: '100%', height: 'auto', maxHeight: '250px', objectFit: 'contain' }} />
       </header>
 
-      {/* Główna zawartość + Sidebar */}
+      {/* Main content grid + sidebar */}
       <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '30px', alignItems: 'start' }}>
         
-        {/* Filtry i Karty */}
+        {/* Filters and video cards */}
         <div>
-          {/* PANEL FILTRÓW */}
+          {/* Filter panel */}
           <FilterPanel 
             uniqueTopics={uniqueTopics} activeTopic={activeTopic} setActiveTopic={setActiveTopic}
             uniqueChannels={uniqueChannels} activeChannel={activeChannel} setActiveChannel={setActiveChannel}
@@ -217,7 +220,7 @@ export default function App() {
             onClearAll={handleClearAll}
           />
 
-          {/* SORTOWANIE */}
+          {/* Sorting controls */}
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' }}>
             <span style={{ fontSize: '0.9em', color: theme.muted }}>{t('sortBy')}</span>
             {['author', 'title', 'series'].map(key => (
@@ -256,7 +259,7 @@ export default function App() {
             )}
           </div>
 
-          {/* LISTA MATERIAŁÓW */}
+          {/* Video/podcast materials list */}
           <main style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
             {displayedMaterials.map(item => (
               <VideoCard
@@ -278,7 +281,7 @@ export default function App() {
           <div style={{ height: '200px' }} />
         </div>
 
-        {/* Sidebar "All channels in database" */}
+        {/* Sidebar: all channels in database */}
         <aside style={{
           background: theme.sidebar,
           padding: '20px',

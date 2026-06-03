@@ -5,6 +5,30 @@ import { useTheme, selectStyles } from '../theme.jsx';
 import { languageName } from '../languages.js';
 import Flag from './Flag';
 
+/**
+ * FilterPanel component for filtering video/podcast library.
+ * Provides controls for filtering by topics (tags), channels, guests/people, series, and language.
+ * @param {Object} props - Component props
+ * @param {string[]} props.uniqueTopics - Available topics/tags
+ * @param {string|null} props.activeTopic - Currently selected topic
+ * @param {Function} props.setActiveTopic - Callback to change active topic
+ * @param {string[]} props.uniqueChannels - Available channel names
+ * @param {string|null} props.activeChannel - Currently selected channel
+ * @param {Function} props.setActiveChannel - Callback to change active channel
+ * @param {string[]} props.uniquePeople - Available guest/person names
+ * @param {string|null} props.activePerson - Currently selected person
+ * @param {Function} props.setActivePerson - Callback to change active person
+ * @param {string[]} props.uniqueSeries - Available series names
+ * @param {string|null} props.activeSeries - Currently selected series
+ * @param {Function} props.setActiveSeries - Callback to change active series
+ * @param {string[]} props.uniqueLanguages - Available language codes
+ * @param {string|null} props.activeLanguage - Currently selected language
+ * @param {Function} props.setActiveLanguage - Callback to change active language
+ * @param {Function} props.getChannelDisplayName - Helper to format channel names for display
+ * @param {Function} props.getPersonDisplayName - Helper to format person names for display
+ * @param {Function} props.onClearAll - Callback when clear all button is clicked
+ * @returns {React.ReactElement} - Filter panel UI
+ */
 export default function FilterPanel({
   uniqueTopics, activeTopic, setActiveTopic,
   uniqueChannels, activeChannel, setActiveChannel,
@@ -19,6 +43,7 @@ export default function FilterPanel({
   const rsStyles = selectStyles(theme);
   const [showAllTopics, setShowAllTopics] = useState(false);
 
+  // Topics pagination: show first 8 by default, then allow "Show All" expansion
   const visibleTopics = showAllTopics ? uniqueTopics : uniqueTopics.slice(0, 8);
 
   const channelOptions = (uniqueChannels || []).map(channel => ({
@@ -49,7 +74,7 @@ export default function FilterPanel({
   return (
     <section style={{ background: theme.panel, padding: '20px', borderRadius: '8px', marginBottom: '30px' }}>
 
-      {/* Sekcja Tematów */}
+      {/* Topics/tags filter section */}
       <div style={{ marginBottom: '20px' }}>
         <h4 style={{ margin: '0 0 10px 0', fontSize: '0.95em', color: theme.heading }}>🏷️ {t('filterByTag')}</h4>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -92,10 +117,10 @@ export default function FilterPanel({
         </div>
       </div>
 
-      {/* Grid z 3 kolumnami dla Kanałów, Osób i Serii */}
+      {/* 3-column grid for channels, people, and series dropdowns */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
         
-        {/* Dropdown dla Kanałów */}
+        {/* Channels dropdown */}
         <div>
           <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.heading }}>📺 {t('filterByChannel')}</h4>
           <Select
@@ -109,7 +134,7 @@ export default function FilterPanel({
           />
         </div>
 
-        {/* Dropdown dla osób */}
+        {/* People/guests dropdown */}
         <div>
           <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.heading }}>👤 {t('filterByPerson')}</h4>
           <Select
@@ -123,7 +148,7 @@ export default function FilterPanel({
           />
         </div>
 
-        {/* Dropdown dla Serii */}
+        {/* Series dropdown */}
         <div>
           <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.heading }}>📚 {t('filterBySeries')}</h4>
           <Select
@@ -137,7 +162,7 @@ export default function FilterPanel({
           />
         </div>
 
-        {/* Dropdown dla języka materiału */}
+        {/* Content language dropdown */}
         <div>
           <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.heading }}>🌐 {t('filterByLanguage')}</h4>
           <Select
@@ -152,7 +177,7 @@ export default function FilterPanel({
         </div>
       </div>
 
-      {/* Przycisk czyszczenia (uwzględnia wszystkie aktywne filtry) */}
+      {/* Clear button (shows only when at least one filter is active) */}
       {(activeChannel || activePerson || activeTopic || activeSeries || activeLanguage) && (
         <div style={{ marginTop: '20px', borderTop: `1px solid ${theme.border}`, paddingTop: '15px' }}>
           <button

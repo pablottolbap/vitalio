@@ -1,3 +1,6 @@
+// URL validation and normalization helpers for YouTube links and topics.
+// Used by ContributionForm for both on-change validation feedback and pre-submit validation.
+
 /**
  * @typedef {Object} NormalizationResult
  * @property {string|null} normalized - Normalized URL or null if invalid
@@ -34,6 +37,7 @@ export const normalizeVideoUrl = (url) => {
     videoId = queryPart.split('&')[0];
   }
 
+  // YouTube video IDs are always exactly 11 characters long (alphanumeric, - and _)
   if (!videoId || videoId.length < 11) {
     return { normalized: null, error: 'Invalid format. Expected: https://www.youtube.com/watch?v=dQw4w9WgXcQ or https://youtu.be/dQw4w9WgXcQ' };
   }

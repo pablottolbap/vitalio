@@ -13,6 +13,7 @@ const DISCUSSION_URL = 'https://github.com/pablottolbap/vitalio/discussions/new?
 const HCAPTCHA_SITEKEY = '50b2fe65-b00b-4b9e-ad62-3ba471098be2';
 const STORAGE_KEY_SUBMISSIONS = 'vitalio-form-submissions';
 const IS_LOCALHOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+// Skip CAPTCHA in development (localhost) to speed up testing
 const SKIP_CAPTCHA = IS_LOCALHOST;
 
 /**
@@ -124,7 +125,7 @@ export default function ContributionForm({ open, onClose }) {
   useEffect(() => {
     if (open) {
       const todaySubmissions = getSubmissionsToday();
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect — setDailyLimitReached is not a direct state update, it's a derived check from open prop
       setDailyLimitReached(todaySubmissions.length >= 5);
     }
   }, [open]);
@@ -135,6 +136,7 @@ export default function ContributionForm({ open, onClose }) {
     return () => clearTimeout(timer);
   }, [cooldown]);
 
+  // Development debugging: log hCaptcha token changes
   useEffect(() => {
     console.log('[ContributionForm] hcaptchaToken state updated:', hcaptchaToken);
   }, [hcaptchaToken]);
@@ -222,6 +224,7 @@ export default function ContributionForm({ open, onClose }) {
     },
     guests: splitList(form.guests),
     topics: splitList(form.topics),
+    // series.order coerces to number with 1 as fallback if empty or NaN
     series: form.seriesName.trim()
       ? { name: form.seriesName.trim(), order: Number(form.seriesOrder) || 1 }
       : null,
@@ -260,7 +263,7 @@ export default function ContributionForm({ open, onClose }) {
     const entry = buildEntry();
     const payload = {
       access_key: ACCESS_KEY,
-      subject: `Vitalio — nowy materiał: ${entry.title || '(bez tytułu)'}`,
+      subject: `Vitalio — new material: ${entry.title || '(untitled)'}`,
       from_name: 'Vitalio',
       replyto: form.email.trim() || undefined,
       message: JSON.stringify(entry, null, 2),

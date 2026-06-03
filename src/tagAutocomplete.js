@@ -1,3 +1,6 @@
+// Tag autocomplete helpers for the contribution form topics/tags field.
+// Used to suggest existing tags as user types and handle tag suggestion application.
+
 /**
  * Extract all suggestions for the current incomplete tag being typed
  * @param {string} inputValue - Current topics input (may contain partial tag at end)
@@ -36,5 +39,6 @@ export function applyTagSuggestion(inputValue, suggestion) {
   const parts = inputValue.split(',').map(p => p.trim());
   // Replace the last incomplete tag with the suggestion
   parts[parts.length - 1] = suggestion;
+  // Append trailing ", " to encourage adding more tags (UX improvement)
   return parts.join(', ') + ', ';
 }
