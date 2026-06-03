@@ -22,6 +22,7 @@ export const themes = {
     badgeBg: '#f0f0f0',
     accent: '#6f42c1',
     link: '#007bff',
+    boldText: '#1B5E7E',
   },
   dark: {
     name: 'dark',
@@ -38,6 +39,7 @@ export const themes = {
     badgeBg: '#333333',
     accent: '#a684ff',
     link: '#5aa9ff',
+    boldText: '#5ECFE5',
   },
 };
 

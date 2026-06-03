@@ -5,6 +5,9 @@ import { LanguageProvider } from './i18n.jsx';
 import { ThemeProvider } from './theme.jsx';
 import App from './App.jsx';
 
+// Mock Math.random to make shuffling deterministic in tests
+vi.spyOn(Math, 'random').mockReturnValue(0.5);
+
 vi.mock('./data.json', () => ({
   default: [
     {
@@ -347,16 +350,16 @@ describe('App — sorting', () => {
 });
 
 describe('App — sidebar counter', () => {
-  it('displays total video counter in sidebar', () => {
+  it('displays statistics panel in sidebar', () => {
     renderApp();
     const sidebar = screen.getByRole('complementary');
-    expect(within(sidebar).getByText(/filmy łącznie|total videos/i)).toBeInTheDocument();
+    expect(within(sidebar).getByText(/Statystyki|Statistics/i)).toBeInTheDocument();
   });
 
-  it('shows correct total count (12 items in fixture)', () => {
+  it('shows correct total materials count (12 items in fixture)', () => {
     renderApp();
     const sidebar = screen.getByRole('complementary');
-    const counter = within(sidebar).getByText(/filmy łącznie|total videos/i);
-    expect(counter.parentElement).toHaveTextContent('12');
+    const statsPanel = within(sidebar).getByText(/Statystyki|Statistics/i).closest('div');
+    expect(within(statsPanel).getByText(/Materiały|Materials/i).parentElement).toHaveTextContent('12');
   });
 });

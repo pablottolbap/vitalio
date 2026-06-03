@@ -67,7 +67,7 @@ export default function VideoCard({ item, onChannelClick, onPersonClick, onTopic
       </div>
 
       <p style={{ margin: '5px 0' }}>
-        <strong>{t('channel')}:</strong>{' '}
+        <strong style={{ color: theme.boldText }}>{t('channel')}:</strong>{' '}
         <span style={linkStyle} onClick={() => onChannelClick(item.author.name)}>
           {item.author.name}
         </span>
@@ -75,7 +75,7 @@ export default function VideoCard({ item, onChannelClick, onPersonClick, onTopic
 
       {item.guests && item.guests.length > 0 && (
         <p style={{ margin: '5px 0' }}>
-          <strong>{t('guests')}: </strong>
+          <strong style={{ color: theme.boldText }}>{t('guests')}: </strong>
           {item.guests.map((guest, index) => (
             <span key={guest}>
               <span style={linkStyle} onClick={() => onPersonClick(guest)}>{guest}</span>
@@ -87,7 +87,7 @@ export default function VideoCard({ item, onChannelClick, onPersonClick, onTopic
 
       {item.series && (
         <p style={{ margin: '5px 0' }}>
-          <strong>{t('series')}: </strong>
+          <strong style={{ color: theme.boldText }}>{t('series')}: </strong>
           <span style={{...linkStyle, fontStyle: 'italic'}} onClick={() => onSeriesClick(item.series.name)}>
             {item.series.name}
           </span>
