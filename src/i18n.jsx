@@ -59,6 +59,11 @@ const translations = {
     formOrDiscussion: 'Wolisz GitHub? Otwórz dyskusję',
     formSubmitCount: 'Wykorzystany limit: {used} / 5',
     close: 'Zamknij',
+    totalLinks: 'Filmy łącznie:',
+    sortBy: 'Sortuj:',
+    sort_author: 'Autor',
+    sort_title: 'Tytuł',
+    sort_series: 'Seria',
   },
   en: {
     tagline: 'Aggregator and search engine for video materials and podcasts.',
@@ -112,12 +117,17 @@ const translations = {
     formOrDiscussion: 'Prefer GitHub? Open a discussion',
     formSubmitCount: 'Submitted: {used} / 5',
     close: 'Close',
+    totalLinks: 'Total videos:',
+    sortBy: 'Sort by:',
+    sort_author: 'Author',
+    sort_title: 'Title',
+    sort_series: 'Series',
   },
 };
 
 const STORAGE_KEY = 'vitalio-ui-lang';
 
-const LanguageContext = createContext({ lang: 'pl', setLang: () => {}, t: (k) => k });
+const LanguageContext = createContext({ lang: 'pl', setLang: () => { }, t: (k) => k });
 
 export function LanguageProvider({ children }) {
   const [lang, setLangState] = useState(() => {
