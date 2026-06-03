@@ -1,11 +1,20 @@
 import { useId } from 'react';
 
-// Flagi jako SVG — renderują się identycznie na każdej platformie
-// (emoji flag na Windowsie pokazują się jako litery, np. "PL").
-// Kod "EN" mapujemy na flagę Wielkiej Brytanii (GB).
+// Flags as SVG — render identically across all platforms
+// (emoji flags on Windows appear as letters, e.g., "PL").
+// Code "EN" maps to the Great Britain flag (GB).
 
+/**
+ * Flag component renders country flags as SVG, mapped from language codes.
+ * @param {Object} props - Component props
+ * @param {string} props.code - Language code (e.g., 'PL', 'EN'); returns white flag if unknown
+ * @param {number} [props.size=20] - Width in pixels; height is scaled to maintain aspect ratio
+ * @param {string} [props.title] - Accessible label for the flag
+ * @returns {React.ReactElement} - SVG flag or fallback white flag for unknown codes
+ */
 export default function Flag({ code, size = 20, title }) {
   const norm = code === 'EN' ? 'GB' : code;
+  // useId() generates unique IDs for SVG clipPath elements to prevent collisions when multiple Flags are rendered.
   const uid = useId();
   const baseStyle = {
     display: 'inline-block',
@@ -45,5 +54,6 @@ export default function Flag({ code, size = 20, title }) {
     );
   }
 
+  // Fallback: white flag for unknown language codes
   return <span aria-label={title}>🏳️</span>;
 }

@@ -8,14 +8,26 @@ import logo from './assets/logo.png';
 import { useLanguage } from './i18n.jsx';
 import { useTheme } from './theme.jsx';
 
-/**
- * Lokalne dane testowe (mock) — plik jest git-ignorowany i nieobecny na produkcji.
- * import.meta.glob z eager:true wczytuje go tylko jeśli istnieje, więc build
- * w CI (bez tego pliku) po prostu pomija mocka i nie zanieczyszcza data.json.
- */
+// Local mock data (test-only) — this file is git-ignored and absent in production.
+// import.meta.glob with eager:true only loads it if it exists, so a CI build
+// (without this file) simply skips the mock and does not pollute data.json.
 const mockModules = import.meta.glob('./mock.local.json', { eager: true });
 const mockData = Object.values(mockModules).flatMap(mod => mod.default || []);
 const allData = [...rawData, ...mockData];
+
+/**
+ * Fisher-Yates shuffle — randomizes array order in-place.
+ * @param {Array} arr - Array to shuffle
+ * @returns {Array} - New shuffled copy of the array
+ */
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 /**
  * Main App component — displays filtered video/podcast library with sidebar and contribution form
@@ -38,6 +50,12 @@ export default function App() {
   const [activeLanguage, setActiveLanguage] = useState(null);
   /** @type {[boolean, Function]} - Whether contribution form dialog is open */
   const [showContribute, setShowContribute] = useState(false);
+  /** @type {[string|null, Function]} - Active sort key: 'author' | 'title' | 'series' | null (random) */
+  const [activeSort, setActiveSort] = useState(null);
+  /** @type {['asc'|'desc', Function]} - Sort direction */
+  const [sortDirection, setSortDirection] = useState('asc');
+  /** @type {[Array, Function]} - Shuffled copy of allData, stable for the session */
+  const [baseData] = useState(() => shuffleArray(allData));
 
   // Infinite scroll state
   /** @type {[number, Function]} - Number of items visible (for lazy loading) */
@@ -93,20 +111,30 @@ export default function App() {
   ).map(([name, channelUrl]) => ({ name, channelUrl }))
    .sort((a, b) => a.name.localeCompare(b.name));
 
-  const filteredMaterials = allData.filter(item => {
-      if (activeChannel && item.author.name !== activeChannel) return false;
-      if (activePerson && (!item.guests || !item.guests.includes(activePerson))) return false;
-      if (activeTopic && (!item.topics || !item.topics.includes(activeTopic))) return false;
-      if (activeSeries && item.series?.name !== activeSeries) return false;
-      if (activeLanguage && item.language !== activeLanguage) return false;
-      return true;
+  const filteredMaterials = baseData.filter(item => {
+    if (activeChannel && item.author.name !== activeChannel) return false;
+    if (activePerson && (!item.guests || !item.guests.includes(activePerson))) return false;
+    if (activeTopic && (!item.topics || !item.topics.includes(activeTopic))) return false;
+    if (activeSeries && item.series?.name !== activeSeries) return false;
+    if (activeLanguage && item.language !== activeLanguage) return false;
+    return true;
   });
 
-  const displayedMaterials = filteredMaterials.slice(0, visibleCount);
+  const sortedMaterials = activeSort
+    ? [...filteredMaterials].sort((a, b) => {
+        let cmp = 0;
+        if (activeSort === 'author') cmp = a.author.name.localeCompare(b.author.name);
+        else if (activeSort === 'title') cmp = a.title.localeCompare(b.title);
+        else if (activeSort === 'series') cmp = (a.series?.name ?? '').localeCompare(b.series?.name ?? '');
+        return sortDirection === 'asc' ? cmp : -cmp;
+      })
+    : filteredMaterials;
+
+  const displayedMaterials = sortedMaterials.slice(0, visibleCount);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting && visibleCount < filteredMaterials.length) {
+      if (entries[0]?.isIntersecting && visibleCount < sortedMaterials.length) {
         setVisibleCount(prevCount => prevCount + 10);
       }
     }, { threshold: 1.0 });
@@ -116,16 +144,16 @@ export default function App() {
     }
 
     return () => observer.disconnect();
-  }, [visibleCount, filteredMaterials.length]);
-  const handleClearAll = () => { setActiveChannel(null); setActivePerson(null); setActiveTopic(null); setActiveSeries(null); setActiveLanguage(null);};
+  }, [visibleCount, sortedMaterials.length]);
+  const handleClearAll = () => { setActiveChannel(null); setActivePerson(null); setActiveTopic(null); setActiveSeries(null); setActiveLanguage(null); setActiveSort(null); setSortDirection('asc'); };
 
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '1200px', margin: '0 auto', color: theme.text }}>
 
-      {/* PASEK STERUJĄCY: motyw + język interfejsu */}
+      {/* Control bar: theme toggle + UI language selector */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
 
-        {/* Przełącznik motywu */}
+        {/* Theme toggle button */}
         <button
           onClick={toggleTheme}
           title={isDark ? 'Tryb jasny' : 'Tryb ciemny'}
@@ -144,7 +172,7 @@ export default function App() {
           {isDark ? '☀️' : '🌙'}
         </button>
 
-        {/* Przełącznik języka interfejsu (flagi) */}
+        {/* UI language selector (flags) */}
         <div style={{ display: 'flex', gap: '6px' }}>
           {['pl', 'en'].map(code => (
             <button
@@ -171,17 +199,17 @@ export default function App() {
         </div>
       </div>
 
-      {/* LOGO */}
+      {/* Header with logo */}
       <header style={{ marginBottom: '30px', display: 'flex', justifyContent: 'center' }}>
         <img src={logo} alt="Vitalio" style={{ width: '400px', maxWidth: '100%', height: 'auto', maxHeight: '250px', objectFit: 'contain' }} />
       </header>
 
-      {/* Główna zawartość + Sidebar */}
+      {/* Main content grid + sidebar */}
       <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '30px', alignItems: 'start' }}>
         
-        {/* Filtry i Karty */}
+        {/* Filters and video cards */}
         <div>
-          {/* PANEL FILTRÓW */}
+          {/* Filter panel */}
           <FilterPanel 
             uniqueTopics={uniqueTopics} activeTopic={activeTopic} setActiveTopic={setActiveTopic}
             uniqueChannels={uniqueChannels} activeChannel={activeChannel} setActiveChannel={setActiveChannel}
@@ -192,7 +220,46 @@ export default function App() {
             onClearAll={handleClearAll}
           />
 
-          {/* LISTA MATERIAŁÓW */}
+          {/* Sorting controls */}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.9em', color: theme.muted }}>{t('sortBy')}</span>
+            {['author', 'title', 'series'].map(key => (
+              <button
+                key={key}
+                onClick={() => setActiveSort(activeSort === key ? null : key)}
+                style={{
+                  padding: '4px 12px',
+                  borderRadius: '12px',
+                  border: `1px solid ${activeSort === key ? theme.accent : theme.border}`,
+                  background: activeSort === key ? theme.accent : 'transparent',
+                  color: activeSort === key ? '#fff' : theme.text,
+                  cursor: 'pointer',
+                  fontSize: '0.85em',
+                }}
+              >
+                {t(`sort_${key}`)}
+              </button>
+            ))}
+            {activeSort && (
+              <button
+                onClick={() => setSortDirection(d => d === 'asc' ? 'desc' : 'asc')}
+                title={sortDirection === 'asc' ? 'Descending' : 'Ascending'}
+                style={{
+                  padding: '4px 10px',
+                  borderRadius: '12px',
+                  border: `1px solid ${theme.border}`,
+                  background: 'transparent',
+                  color: theme.text,
+                  cursor: 'pointer',
+                  fontSize: '0.85em',
+                }}
+              >
+                {sortDirection === 'asc' ? '↑' : '↓'}
+              </button>
+            )}
+          </div>
+
+          {/* Video/podcast materials list */}
           <main style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
             {displayedMaterials.map(item => (
               <VideoCard
@@ -206,7 +273,7 @@ export default function App() {
               />
             ))}
           </main>
-          {filteredMaterials.length === 0 && (
+          {sortedMaterials.length === 0 && (
             <p style={{ textAlign: 'center', color: theme.muted, marginTop: '40px' }}>{t('noResults')}</p>
           )}
 
@@ -214,7 +281,7 @@ export default function App() {
           <div style={{ height: '200px' }} />
         </div>
 
-        {/* Sidebar "All channels in database" */}
+        {/* Sidebar: all channels in database */}
         <aside style={{
           background: theme.sidebar,
           padding: '20px',
@@ -229,24 +296,29 @@ export default function App() {
           <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
             {uniqueChannelsWithUrls.map(channel => (
               <li key={channel.name} style={{ marginBottom: '12px' }}>
-                <a
-                  href={channel.channelUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{
-                    color: theme.link,
-                    textDecoration: 'none',
-                    fontSize: '0.95em',
-                    display: 'inline-block'
-                  }}
-                  onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
-                  onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
-                >
-                  📺 {channel.name}
-                </a>
+                <div>
+                  <a
+                    href={channel.channelUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      color: theme.link,
+                      textDecoration: 'none',
+                      fontSize: '0.95em',
+                      display: 'inline-block'
+                    }}
+                    onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
+                    onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
+                  >
+                    📺 {channel.name}
+                  </a>
+                </div>
               </li>
             ))}
           </ul>
+          <p style={{ fontSize: '0.85em', color: theme.muted, marginTop: '12px', marginBottom: 0 }}>
+            {t('totalLinks')} <strong>{allData.length}</strong>
+          </p>
         </aside>
 
       </div>

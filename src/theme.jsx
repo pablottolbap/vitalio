@@ -2,9 +2,9 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 /* eslint-disable react-refresh/only-export-components */
 
-// Prosty system motywów (jasny/ciemny) oparty na obiekcie kolorów.
-// Aplikacja używa stylów inline, więc kolory rozprowadzamy przez kontekst,
-// analogicznie do systemu tłumaczeń w i18n.jsx.
+// Simple theme system (light/dark) based on a color object.
+// The app uses inline styles, so colors are distributed via context,
+// analogous to the translation system in i18n.jsx.
 
 export const themes = {
   light: {
@@ -45,6 +45,13 @@ const STORAGE_KEY = 'vitalio-theme';
 
 const ThemeContext = createContext({ theme: themes.light, isDark: false, toggleTheme: () => {} });
 
+/**
+ * Provides theme context (light/dark) to the entire app.
+ * Reads user preference from localStorage or system settings on first load.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components
+ * @returns {React.ReactElement} - Provider element wrapping children
+ */
 export function ThemeProvider({ children }) {
   const [mode, setMode] = useState(() => {
     try {
@@ -52,7 +59,7 @@ export function ThemeProvider({ children }) {
       if (saved === 'light' || saved === 'dark') return saved;
       if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
     } catch {
-      // brak dostępu do localStorage/matchMedia — używamy jasnego motywu
+      // localStorage/matchMedia unavailable — use light theme as fallback
     }
     return 'light';
   });
@@ -65,7 +72,7 @@ export function ThemeProvider({ children }) {
       try {
         localStorage.setItem(STORAGE_KEY, next);
       } catch {
-        // ignorujemy błędy zapisu
+        // Silently ignore write errors (localStorage may be full or unavailable)
       }
       return next;
     });
@@ -84,11 +91,22 @@ export function ThemeProvider({ children }) {
   );
 }
 
+/**
+ * Hook to access theme context.
+ * @returns {Object} Theme context object
+ * @returns {Object} .theme - Current theme color object (light or dark)
+ * @returns {boolean} .isDark - Whether dark mode is active
+ * @returns {Function} .toggleTheme - Function to toggle between light/dark modes
+ */
 export function useTheme() {
   return useContext(ThemeContext);
 }
 
-// Style dla react-select dopasowane do aktualnego motywu.
+/**
+ * Style overrides for react-select component, matched to current theme.
+ * @param {Object} theme - Theme color object from useTheme
+ * @returns {Object} Style overrides for react-select (control, menu, option, etc.)
+ */
 export function selectStyles(theme) {
   return {
     control: (base, state) => ({
