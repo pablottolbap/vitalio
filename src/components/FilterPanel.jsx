@@ -76,7 +76,7 @@ export default function FilterPanel({
 
       {/* Topics/tags filter section */}
       <div style={{ marginBottom: '20px' }}>
-        <h4 style={{ margin: '0 0 10px 0', fontSize: '0.95em', color: theme.heading }}>🏷️ {t('filterByTag')}</h4>
+        <h4 style={{ margin: '0 0 10px 0', fontSize: '0.95em', color: theme.boldText, fontWeight: 'bold' }}>🏷️ {t('filterByTag')}</h4>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
           {visibleTopics.map(topic => (
             <button
@@ -85,9 +85,9 @@ export default function FilterPanel({
               style={{
                 padding: '6px 14px',
                 borderRadius: '20px',
-                border: activeTopic === topic ? `2px solid ${theme.accent}` : `1px solid ${theme.borderStrong}`,
+                border: activeTopic === topic ? `2px solid ${theme.boldText}` : `1px solid ${theme.borderStrong}`,
                 cursor: 'pointer',
-                background: activeTopic === topic ? theme.accent : theme.card,
+                background: activeTopic === topic ? theme.boldText : theme.card,
                 color: activeTopic === topic ? '#fff' : theme.text,
                 fontSize: '0.85em',
                 fontWeight: activeTopic === topic ? 'bold' : 'normal',
@@ -122,7 +122,7 @@ export default function FilterPanel({
         
         {/* Channels dropdown */}
         <div>
-          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.heading }}>📺 {t('filterByChannel')}</h4>
+          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.boldText, fontWeight: 'bold' }}>📺 {t('filterByChannel')}</h4>
           <Select
             styles={rsStyles}
             options={channelOptions}
@@ -136,7 +136,7 @@ export default function FilterPanel({
 
         {/* People/guests dropdown */}
         <div>
-          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.heading }}>👤 {t('filterByPerson')}</h4>
+          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.boldText, fontWeight: 'bold' }}>👤 {t('filterByPerson')}</h4>
           <Select
             styles={rsStyles}
             options={personOptions}
@@ -150,7 +150,7 @@ export default function FilterPanel({
 
         {/* Series dropdown */}
         <div>
-          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.heading }}>📚 {t('filterBySeries')}</h4>
+          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.boldText, fontWeight: 'bold' }}>📚 {t('filterBySeries')}</h4>
           <Select
             styles={rsStyles}
             options={seriesOptions}
@@ -164,7 +164,7 @@ export default function FilterPanel({
 
         {/* Content language dropdown */}
         <div>
-          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.heading }}>🌐 {t('filterByLanguage')}</h4>
+          <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95em', color: theme.boldText, fontWeight: 'bold' }}>🌐 {t('filterByLanguage')}</h4>
           <Select
             styles={rsStyles}
             options={languageOptions}

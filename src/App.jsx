@@ -3,6 +3,7 @@ import rawData from './data.json';
 import FilterPanel from './components/FilterPanel';
 import VideoCard from './components/VideoCard';
 import Flag from './components/Flag';
+import StatsPanel from './components/StatsPanel';
 import ContributionForm from './components/ContributionForm';
 import logo from './assets/logo.png';
 import { useLanguage } from './i18n.jsx';
@@ -63,6 +64,12 @@ export default function App() {
   /** @type {React.MutableRefObject<HTMLDivElement|null>} - Intersection observer anchor element */
   const observerRef = useRef(null);
 
+  // Footer state
+  /** @type {[boolean, Function]} - Whether user has scrolled down */
+  const [hasScrolled, setHasScrolled] = useState(false);
+  /** @type {[boolean, Function]} - Whether to show full footer (vs alternative footer when scrolled) */
+  const [showFullFooter, setShowFullFooter] = useState(true);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.has('reset') && params.get('reset') === '1') {
@@ -91,6 +98,18 @@ export default function App() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setVisibleCount(10);
   }, [activeTopic, activeChannel, activePerson, activeSeries, activeLanguage]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.scrollY > 200;
+      setHasScrolled(scrolled);
+      if (scrolled && showFullFooter) {
+        setShowFullFooter(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [showFullFooter]);
 
   const uniqueChannels = [...new Set(allData.map(item => item.author.name))]
     .sort((a, b) => a.localeCompare(b));
@@ -222,7 +241,9 @@ export default function App() {
 
           {/* Sorting controls */}
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.9em', color: theme.muted }}>{t('sortBy')}</span>
+            <span style={{ fontSize: '0.9em', color: theme.boldText, fontWeight: 'bold' }}>
+              {activeSort ? (sortDirection === 'asc' ? '▲' : '▼') : '⬍'} {t('sortBy')}
+            </span>
             {['author', 'title', 'series'].map(key => (
               <button
                 key={key}
@@ -230,8 +251,8 @@ export default function App() {
                 style={{
                   padding: '4px 12px',
                   borderRadius: '12px',
-                  border: `1px solid ${activeSort === key ? theme.accent : theme.border}`,
-                  background: activeSort === key ? theme.accent : 'transparent',
+                  border: `1px solid ${activeSort === key ? theme.boldText : theme.border}`,
+                  background: activeSort === key ? theme.boldText : 'transparent',
                   color: activeSort === key ? '#fff' : theme.text,
                   cursor: 'pointer',
                   fontSize: '0.85em',
@@ -281,44 +302,48 @@ export default function App() {
           <div style={{ height: '200px' }} />
         </div>
 
-        {/* Sidebar: all channels in database */}
+        {/* Sidebar: all channels + statistics */}
         <aside style={{
-          background: theme.sidebar,
-          padding: '20px',
-          borderRadius: '8px',
-          border: `1px solid ${theme.border}`,
-          position: 'sticky',
-          top: '20px'
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px'
         }}>
-          <h3 style={{ marginTop: 0, marginBottom: '15px', fontSize: '1.1em', color: theme.text }}>
-            {t('allChannels')}
-          </h3>
-          <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
-            {uniqueChannelsWithUrls.map(channel => (
-              <li key={channel.name} style={{ marginBottom: '12px' }}>
-                <div>
-                  <a
-                    href={channel.channelUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      color: theme.link,
-                      textDecoration: 'none',
-                      fontSize: '0.95em',
-                      display: 'inline-block'
-                    }}
-                    onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
-                    onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
-                  >
-                    📺 {channel.name}
-                  </a>
-                </div>
-              </li>
-            ))}
-          </ul>
-          <p style={{ fontSize: '0.85em', color: theme.muted, marginTop: '12px', marginBottom: 0 }}>
-            {t('totalLinks')} <strong>{allData.length}</strong>
-          </p>
+          {/* All Channels section */}
+          <div style={{
+            background: theme.sidebar,
+            padding: '20px',
+            borderRadius: '8px',
+            border: `1px solid ${theme.border}`
+          }}>
+            <h3 style={{ marginTop: 0, marginBottom: '15px', fontSize: '1.1em', color: theme.boldText }}>
+              {t('allChannels')}
+            </h3>
+            <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
+              {uniqueChannelsWithUrls.map(channel => (
+                <li key={channel.name} style={{ marginBottom: '12px' }}>
+                  <div>
+                    <a
+                      href={channel.channelUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        color: theme.link,
+                        textDecoration: 'none',
+                        fontSize: '0.95em',
+                        display: 'inline-block'
+                      }}
+                      onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
+                      onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
+                    >
+                      📺 {channel.name}
+                    </a>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <StatsPanel allData={allData} channels={uniqueChannelsWithUrls} />
         </aside>
 
       </div>
@@ -330,50 +355,95 @@ export default function App() {
         right: 0,
         background: theme.pageBg,
         borderTop: `1px solid ${theme.border}`,
-        paddingTop: '20px',
-        paddingBottom: '20px',
-        paddingLeft: '20px',
-        paddingRight: '20px',
+        paddingTop: '8px',
+        paddingBottom: '8px',
         textAlign: 'center',
         fontSize: '0.9em',
         zIndex: 100,
         boxShadow: '0 -2px 8px rgba(0,0,0,0.1)'
       }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '30px',
-          flexWrap: 'wrap',
-          marginBottom: '15px'
-        }}>
-          <a
-            href="https://github.com/pablottolbap/vitalio"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: '#6f42c1', textDecoration: 'none', fontWeight: 'bold' }}
-          >
-            💻 {t('projectSite')}
-          </a>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', paddingLeft: '20px', paddingRight: '20px' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '140px auto 140px 120px',
+            justifyContent: 'center',
+            gap: '30px',
+            marginBottom: '6px',
+            alignItems: 'center',
+            textAlign: 'center',
+            lineHeight: '1'
+          }}>
+            {/* Slot 1: Project site OR Go back on top */}
+            <div>
+              {hasScrolled && !showFullFooter ? (
+                <button
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  style={{ background: 'transparent', border: 'none', padding: 0, color: theme.boldText, fontWeight: 'bold', fontSize: 'inherit', fontFamily: 'inherit', cursor: 'pointer', width: '100%', lineHeight: '1', display: 'block' }}
+                >
+                  ⬆️ {t('scrollToTop')}
+                </button>
+              ) : (
+                <a
+                  href="https://github.com/pablottolbap/vitalio"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: theme.boldText, textDecoration: 'none', fontWeight: 'bold', display: 'block', lineHeight: '1' }}
+                >
+                  💻 {t('projectSite')}
+                </a>
+              )}
+            </div>
 
-          <a
-            href="https://github.com/pablottolbap/vitalio/issues"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: '#dc3545', textDecoration: 'none', fontWeight: 'bold' }}
-          >
-            🐛 {t('reportBug')}
-          </a>
+            {/* Slot 2: Report bug OR empty */}
+            <div>
+              {!(hasScrolled && !showFullFooter) && (
+                <a
+                  href="https://github.com/pablottolbap/vitalio/issues"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#dc3545', textDecoration: 'none', fontWeight: 'bold' }}
+                >
+                  🐛 {t('reportBug')}
+                </a>
+              )}
+            </div>
 
-          <button
-            onClick={() => setShowContribute(true)}
-            style={{ background: 'transparent', border: 'none', padding: 0, color: '#28a745', textDecoration: 'none', fontWeight: 'bold', fontSize: 'inherit', fontFamily: 'inherit', cursor: 'pointer' }}
-          >
-            💡 {t('reportContent')}
-          </button>
+            {/* Slot 3: Suggest content (only in main footer) */}
+            <div>
+              {!(hasScrolled && !showFullFooter) && (
+                <button
+                  onClick={() => setShowContribute(true)}
+                  style={{ background: 'transparent', border: 'none', padding: 0, color: '#28a745', fontWeight: 'bold', fontSize: 'inherit', fontFamily: 'inherit', cursor: 'pointer', width: '100%', lineHeight: '1', display: 'block' }}
+                >
+                  💡 {t('reportContent')}
+                </button>
+              )}
+            </div>
+
+            {/* Slot 4: Hide footer OR Show footer OR empty */}
+            <div>
+              {hasScrolled && !showFullFooter ? (
+                <button
+                  onClick={() => setShowFullFooter(true)}
+                  style={{ background: 'transparent', border: 'none', padding: 0, color: theme.text, fontWeight: 'bold', fontSize: 'inherit', fontFamily: 'inherit', cursor: 'pointer', width: '100%', lineHeight: '1', display: 'block' }}
+                >
+                  {t('showFooter')}
+                </button>
+              ) : hasScrolled && showFullFooter ? (
+                <button
+                  onClick={() => setShowFullFooter(false)}
+                  style={{ background: 'transparent', border: 'none', padding: 0, color: theme.text, fontWeight: 'bold', fontSize: 'inherit', fontFamily: 'inherit', cursor: 'pointer', width: '100%', lineHeight: '1', display: 'block' }}
+                >
+                  {t('hideFooter')}
+                </button>
+              ) : null}
+            </div>
+          </div>
+
+          <p style={{ margin: '0px', fontSize: '0.75em', color: theme.faint }}>
+            {t('copyright')}
+          </p>
         </div>
-        <p style={{ margin: '0', fontSize: '0.8em', color: theme.faint }}>
-          {t('copyright')}
-        </p>
       </footer>
 
       <ContributionForm open={showContribute} onClose={() => setShowContribute(false)} />
