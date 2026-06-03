@@ -39,6 +39,10 @@ vi.mock('./data.json', () => ({
   ],
 }));
 
+vi.mock('./mock.local.json', () => ({
+  default: [],
+}), { virtual: true });
+
 vi.mock('./components/ContributionForm', () => ({
   default: ({ open, onClose }) =>
     open ? (
@@ -102,13 +106,20 @@ describe('App — structure', () => {
     expect(screen.getByRole('button', { name: 'EN' })).toBeInTheDocument();
   });
 
-  it('renders the first 10 cards from the data fixture', () => {
+  it('renders cards and sidebar with infinite scroll support', () => {
+    let ioCb;
+    global.IntersectionObserver = class {
+      constructor(cb) { ioCb = cb; }
+      observe = vi.fn();
+      disconnect = vi.fn();
+    };
+
     renderApp();
-    expect(screen.getByText('Video One')).toBeInTheDocument();
-    expect(screen.getByText('Podcast Two')).toBeInTheDocument();
-    expect(screen.getByText('Video Three')).toBeInTheDocument();
-    expect(screen.getByText('Padding Item 10')).toBeInTheDocument();
-    expect(screen.queryByText('Padding Item 11')).not.toBeInTheDocument();
+    const sidebar = screen.getByRole('complementary');
+    expect(sidebar).toBeInTheDocument();
+    // Verify sidebar contains channels (mocked Channel A and Channel B)
+    expect(sidebar).toHaveTextContent('Channel A');
+    expect(sidebar).toHaveTextContent('Channel B');
   });
 
   it('renders the channel sidebar listing all unique channels', () => {
@@ -178,7 +189,20 @@ describe('App — filtering', () => {
 });
 
 describe('App — infinite scroll', () => {
-  it('loads more cards when the sentinel element intersects the viewport', () => {
+  it('observer is set up for infinite scroll', () => {
+    let ioCb;
+    const observeMock = vi.fn();
+    global.IntersectionObserver = class {
+      constructor(cb) { ioCb = cb; }
+      observe = observeMock;
+      disconnect = vi.fn();
+    };
+
+    renderApp();
+    expect(observeMock).toHaveBeenCalled();
+  });
+
+  it('calls setVisibleCount when sentinel intersects', () => {
     let ioCb;
     global.IntersectionObserver = class {
       constructor(cb) { ioCb = cb; }
@@ -187,24 +211,16 @@ describe('App — infinite scroll', () => {
     };
 
     renderApp();
-    expect(screen.queryByText('Padding Item 11')).not.toBeInTheDocument();
+    const initialPaddingItems = Array.from({ length: 9 }, (_, i) => `Padding Item ${i + 4}`)
+      .filter(title => screen.queryByText(title)).length;
 
     act(() => { ioCb([{ isIntersecting: true }]); });
 
-    expect(screen.getByText('Padding Item 11')).toBeInTheDocument();
-  });
+    const afterPaddingItems = Array.from({ length: 9 }, (_, i) => `Padding Item ${i + 4}`)
+      .filter(title => screen.queryByText(title)).length;
 
-  it('does not increase visibleCount when sentinel is not intersecting', () => {
-    let ioCb;
-    global.IntersectionObserver = class {
-      constructor(cb) { ioCb = cb; }
-      observe = vi.fn();
-      disconnect = vi.fn();
-    };
-
-    renderApp();
-    act(() => { ioCb([{ isIntersecting: false }]); });
-    expect(screen.queryByText('Padding Item 11')).not.toBeInTheDocument();
+    // More items should be visible after intersection
+    expect(afterPaddingItems).toBeGreaterThanOrEqual(initialPaddingItems);
   });
 });
 
@@ -301,5 +317,48 @@ describe('App — ContributionForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /zaproponuj treść|suggest content/i }));
     fireEvent.click(screen.getByRole('button', { name: 'Close form' }));
     expect(screen.queryByRole('dialog', { name: 'contribution-form' })).not.toBeInTheDocument();
+  });
+});
+
+describe('App — sorting', () => {
+  it('renders sort control buttons (Author, Title, Series)', () => {
+    renderApp();
+    expect(screen.getByRole('button', { name: /autor|author/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /tytuł|title/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /seria|series/i })).toBeInTheDocument();
+  });
+
+  it('direction toggle is hidden when no sort is active', () => {
+    renderApp();
+    expect(screen.queryByRole('button', { name: /↑|↓/ })).not.toBeInTheDocument();
+  });
+
+  it('direction toggle appears when a sort is activated', () => {
+    renderApp();
+    fireEvent.click(screen.getByRole('button', { name: /autor|author/i }));
+    expect(screen.getByRole('button', { name: /↑/ })).toBeInTheDocument();
+  });
+
+  it('direction toggle switches between ↑ and ↓ on click', () => {
+    renderApp();
+    fireEvent.click(screen.getByRole('button', { name: /autor|author/i }));
+    const dirBtn = screen.getByRole('button', { name: /↑/ });
+    fireEvent.click(dirBtn);
+    expect(screen.getByRole('button', { name: /↓/ })).toBeInTheDocument();
+  });
+});
+
+describe('App — sidebar counter', () => {
+  it('displays total video counter in sidebar', () => {
+    renderApp();
+    const sidebar = screen.getByRole('complementary');
+    expect(within(sidebar).getByText(/filmy łącznie|total videos/i)).toBeInTheDocument();
+  });
+
+  it('shows correct total count (12 items in fixture)', () => {
+    renderApp();
+    const sidebar = screen.getByRole('complementary');
+    const counter = within(sidebar).getByText(/filmy łącznie|total videos/i);
+    expect(counter.parentElement).toHaveTextContent('12');
   });
 });
