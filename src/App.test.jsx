@@ -1,5 +1,5 @@
 
-import { render, screen, fireEvent, within, act, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, within, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { LanguageProvider } from './i18n.jsx';
 import { ThemeProvider } from './theme.jsx';
