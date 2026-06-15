@@ -1,4 +1,5 @@
 // Card component displaying a single video or podcast material with clickable filter tags.
+import PropTypes from 'prop-types';
 import { useLanguage } from '../i18n.jsx';
 import { useTheme } from '../theme.jsx';
 import { languageName } from '../languages.js';
@@ -110,3 +111,28 @@ export default function VideoCard({ item, onChannelClick, onPersonClick, onTopic
     </div>
   );
 }
+
+VideoCard.propTypes = {
+  item: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    type: PropTypes.oneOf(['video', 'podcast', 'qa']).isRequired,
+    title: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
+    language: PropTypes.string.isRequired,
+    author: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      channelUrl: PropTypes.string.isRequired,
+    }).isRequired,
+    guests: PropTypes.arrayOf(PropTypes.string),
+    topics: PropTypes.arrayOf(PropTypes.string).isRequired,
+    series: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      order: PropTypes.number.isRequired,
+    }),
+  }).isRequired,
+  onChannelClick: PropTypes.func.isRequired,
+  onPersonClick: PropTypes.func.isRequired,
+  onTopicClick: PropTypes.func.isRequired,
+  onSeriesClick: PropTypes.func.isRequired,
+  onLanguageClick: PropTypes.func.isRequired,
+};

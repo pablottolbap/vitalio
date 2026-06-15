@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { STORAGE_KEYS } from './constants.js';
+import { safeLocalStorageGet, safeLocalStorageSet } from './utils/storage.js';
 
 /* eslint-disable react-refresh/only-export-components */
 
@@ -144,8 +146,6 @@ const translations = {
   },
 };
 
-const STORAGE_KEY = 'vitalio-ui-lang';
-
 const LanguageContext = createContext({ lang: 'pl', setLang: () => { }, t: (k) => k });
 
 /**
@@ -156,22 +156,13 @@ const LanguageContext = createContext({ lang: 'pl', setLang: () => { }, t: (k) =
  */
 export function LanguageProvider({ children }) {
   const [lang, setLangState] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved === 'en' || saved === 'pl') return saved;
-    } catch {
-      // localStorage unavailable — use default language
-    }
-    return 'pl';
+    const saved = safeLocalStorageGet(STORAGE_KEYS.UI_LANGUAGE, 'pl');
+    return (saved === 'en' || saved === 'pl') ? saved : 'pl';
   });
 
   const setLang = (next) => {
     setLangState(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, next);
-    } catch {
-      // Silently ignore write errors (localStorage may be full or unavailable)
-    }
+    safeLocalStorageSet(STORAGE_KEYS.UI_LANGUAGE, next);
   };
 
   useEffect(() => {

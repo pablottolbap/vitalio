@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import PropTypes from 'prop-types';
 
 // Flags as SVG — render identically across all platforms
 // (emoji flags on Windows appear as letters, e.g., "PL").
@@ -57,3 +58,9 @@ export default function Flag({ code, size = 20, title }) {
   // Fallback: white flag for unknown language codes
   return <span aria-label={title}>🏳️</span>;
 }
+
+Flag.propTypes = {
+  code: PropTypes.string.isRequired,
+  size: PropTypes.number,
+  title: PropTypes.string,
+};

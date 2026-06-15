@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { useLanguage } from '../i18n.jsx';
 import { useTheme } from '../theme.jsx';
@@ -7,14 +8,11 @@ import { splitList, validateVideoUrl, validateChannelUrl, normalizeVideoUrl, nor
 import { validateNewTags } from '../tagValidator.js';
 import { getTagSuggestions, applyTagSuggestion } from '../tagAutocomplete.js';
 import rawData from '../data.json';
+import { STORAGE_KEYS, FORM_CONFIG, URLS } from '../constants.js';
+import { safeLocalStorageGet, safeLocalStorageSet } from '../utils/storage.js';
 
 const ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || 'YOUR_WEB3FORMS_ACCESS_KEY';
-const DISCUSSION_URL = 'https://github.com/pablottolbap/vitalio/discussions/new?category=new-materials-request';
-const HCAPTCHA_SITEKEY = '50b2fe65-b00b-4b9e-ad62-3ba471098be2';
-const STORAGE_KEY_SUBMISSIONS = 'vitalio-form-submissions';
-const IS_LOCALHOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-// Skip CAPTCHA in development (localhost) to speed up testing
-const SKIP_CAPTCHA = IS_LOCALHOST;
+const SKIP_CAPTCHA = import.meta.env.DEV;
 
 /**
  * @typedef {Object} FormData
@@ -67,9 +65,8 @@ const EMPTY = {
  * @returns {string[]} Array of ISO timestamp strings for today's submissions
  */
 const getSubmissionsToday = () => {
+  const stored = safeLocalStorageGet(STORAGE_KEYS.FORM_SUBMISSIONS, '[]');
   try {
-    const stored = localStorage.getItem(STORAGE_KEY_SUBMISSIONS);
-    if (!stored) return [];
     const submissions = JSON.parse(stored);
     const today = new Date().toDateString();
     return submissions.filter(date => new Date(date).toDateString() === today);
@@ -84,10 +81,10 @@ const getSubmissionsToday = () => {
  */
 const recordSubmission = () => {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY_SUBMISSIONS) || '[]';
+    const stored = safeLocalStorageGet(STORAGE_KEYS.FORM_SUBMISSIONS, '[]');
     const submissions = JSON.parse(stored);
     submissions.push(new Date().toISOString());
-    localStorage.setItem(STORAGE_KEY_SUBMISSIONS, JSON.stringify(submissions.slice(-50)));
+    safeLocalStorageSet(STORAGE_KEYS.FORM_SUBMISSIONS, JSON.stringify(submissions.slice(-FORM_CONFIG.SUBMISSION_HISTORY_SIZE)));
   } catch {
     // localStorage error — submission was sent but timestamp not recorded
   }
@@ -120,18 +117,13 @@ export default function ContributionForm({ open, onClose }) {
   /** @type {[string[], Function]} - Autocomplete suggestions for topic tags */
   const [tagSuggestions, setTagSuggestions] = useState([]);
 
-  const dailyLimitReached = open && getSubmissionsToday().length >= 5;
+  const dailyLimitReached = open && getSubmissionsToday().length >= FORM_CONFIG.DAILY_LIMIT;
 
   useEffect(() => {
     if (cooldown <= 0) return;
     const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
     return () => clearTimeout(timer);
   }, [cooldown]);
-
-  // Development debugging: log hCaptcha token changes
-  useEffect(() => {
-    console.log('[ContributionForm] hcaptchaToken state updated:', hcaptchaToken);
-  }, [hcaptchaToken]);
 
   useEffect(() => {
     if (!open) return;
@@ -266,23 +258,34 @@ export default function ContributionForm({ open, onClose }) {
     }
 
     try {
-      const res = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (data.success) {
-        recordSubmission();
-        setStatus('success');
-        setForm(EMPTY);
-        setHcaptchaToken(null);
-        setCooldown(30);
-      } else {
-        console.error('[web3forms] submission failed:', data);
-        setStatus('error');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), FORM_CONFIG.FETCH_TIMEOUT_MS);
+
+      try {
+        const res = await fetch(FORM_CONFIG.API_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+        const data = await res.json();
+        if (data.success) {
+          recordSubmission();
+          setStatus('success');
+          setForm(EMPTY);
+          setHcaptchaToken(null);
+          setCooldown(FORM_CONFIG.COOLDOWN_SECONDS);
+        } else if (import.meta.env.DEV) {
+          console.error('[web3forms] submission failed:', data);
+          setStatus('error');
+        } else {
+          setStatus('error');
+        }
+      } finally {
+        clearTimeout(timeoutId);
       }
-    } catch {
+    } catch (err) {
+      if (import.meta.env.DEV) console.error('[form submission]', err.message);
       setStatus('error');
     }
   };
@@ -355,7 +358,7 @@ export default function ContributionForm({ open, onClose }) {
                 {t('close')}
               </button>
               <a
-                href={DISCUSSION_URL}
+                href={URLS.DISCUSSION}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ background: theme.card, color: theme.link, border: `1px solid ${theme.border}`, padding: '8px 18px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', textDecoration: 'none', display: 'inline-block' }}
@@ -513,15 +516,13 @@ export default function ContributionForm({ open, onClose }) {
             {!SKIP_CAPTCHA && (
               <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}>
                 <HCaptcha
-                  sitekey={HCAPTCHA_SITEKEY}
+                  sitekey={FORM_CONFIG.HCAPTCHA_SITEKEY}
                   onVerify={(token) => {
-                    console.log('[hCaptcha] Verification response:', token);
                     const tokenValue = typeof token === 'string' ? token : token?.response;
-                    console.log('[hCaptcha] Token value:', tokenValue);
                     setHcaptchaToken(tokenValue || null);
                   }}
                   onError={(error) => {
-                    console.error('[hCaptcha] Error:', error);
+                    if (import.meta.env.DEV) console.error('[hCaptcha] Error:', error);
                   }}
                   theme={isDark ? 'dark' : 'light'}
                 />
@@ -559,7 +560,7 @@ export default function ContributionForm({ open, onClose }) {
             </p>
 
             <p style={{ textAlign: 'center', marginBottom: 0, marginTop: '14px', fontSize: '0.85em' }}>
-              <a href={DISCUSSION_URL} target="_blank" rel="noopener noreferrer" style={{ color: theme.link }}>
+              <a href={URLS.DISCUSSION} target="_blank" rel="noopener noreferrer" style={{ color: theme.link }}>
                 {t('formOrDiscussion')}
               </a>
             </p>
@@ -569,3 +570,8 @@ export default function ContributionForm({ open, onClose }) {
     </div>
   );
 }
+
+ContributionForm.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+};

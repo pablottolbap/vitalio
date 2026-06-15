@@ -1,0 +1,23 @@
+[
+    {
+        "id": "poradnik-gastrologiczny-1",
+        "type": "video",
+        "title": "Dlaczego jelita kochają jajka? Kilka faktów od gastrologa.",
+        "url": "https://www.youtube.com/watch?v=I1opks-_bkI",
+        "language": "PL",
+        "author": {
+            "name": "Poradnik Gastrologiczny",
+            "channelUrl": "https://www.youtube.com/@poradnikgastrologiczny"
+        },
+        "guests": [
+            "Marta Dobras"
+        ],
+        "topics": [
+            "gut",
+            "eggs",
+            "intestines",
+            "diverticulosis"
+        ],
+        "series": null
+    }
+]

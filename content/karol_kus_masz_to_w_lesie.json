@@ -91,6 +91,9 @@
       "Jacek Safuta"
     ],
     "topics": [
+      "nutrition",
+      "fruits",
+      "grains",
       "qa"
     ],
     "series": {
@@ -162,6 +165,8 @@
       "Jacek Safuta"
     ],
     "topics": [
+      "fats",
+      "vegetables",
       "qa"
     ],
     "series": {
@@ -184,6 +189,8 @@
       "Jacek Safuta"
     ],
     "topics": [
+      "fats",
+      "vegetables",
       "qa"
     ],
     "series": {
@@ -232,6 +239,7 @@
       "Jacek Safuta"
     ],
     "topics": [
+      "coffee",
       "qa"
     ],
     "series": {
@@ -280,6 +288,7 @@
       "Jacek Safuta"
     ],
     "topics": [
+      "herbs",
       "qa"
     ],
     "series": {
@@ -328,6 +337,7 @@
       "Jacek Safuta"
     ],
     "topics": [
+      "mushrooms",
       "qa"
     ],
     "series": {
@@ -403,13 +413,59 @@
     ],
     "topics": [
       "dairy",
+      "qa"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 17
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-18",
+    "type": "qa",
+    "title": "Co jeść doktorku? Q&A #07 | Odpowiadamy na pytania widzów - Nabiał",
+    "url": "https://www.youtube.com/watch?v=Rbw3IWCdWzI",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "dairy",
+      "qa"
+    ],
+    "series": {
+      "name": "Co jeść doktorku?",
+      "order": 18
+    }
+  },
+  {
+    "id": "karol-kus-masz-to-w-lesie-19",
+    "type": "qa",
+    "title": "Co jeść doktorku? Q&A #08 | Odpowiadamy na pytania widzów - Nabiał cz.2",
+    "url": "https://www.youtube.com/watch?v=A8JXiiHUWOo",
+    "language": "PL",
+    "author": {
+      "name": "Karol Kus Masz To W Lesie",
+      "channelUrl": "https://www.youtube.com/@kkmasztowlesie"
+    },
+    "guests": [
+      "Karol Kus",
+      "Jacek Safuta"
+    ],
+    "topics": [
+      "dairy",
       "casein",
       "nutrition",
       "diet"
     ],
     "series": {
       "name": "Co jeść doktorku?",
-      "order": 17
+      "order": 19
     }
-  }
+  }    
 ]

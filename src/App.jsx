@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import rawData from './data.json';
 import FilterPanel from './components/FilterPanel';
 import VideoCard from './components/VideoCard';
@@ -8,6 +8,8 @@ import ContributionForm from './components/ContributionForm';
 import logo from './assets/logo.png';
 import { useLanguage } from './i18n.jsx';
 import { useTheme } from './theme.jsx';
+import { STORAGE_KEYS, UI_CONFIG } from './constants.js';
+import { safeLocalStorageRemove } from './utils/storage.js';
 
 // Local mock data (test-only) — this file is git-ignored and absent in production.
 // import.meta.glob with eager:true only loads it if it exists, so a CI build
@@ -73,12 +75,8 @@ export default function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.has('reset') && params.get('reset') === '1') {
-      try {
-        localStorage.removeItem('vitalio-ui-lang');
-        localStorage.removeItem('vitalio-theme');
-      } catch {
-        // localStorage access error — continue anyway
-      }
+      safeLocalStorageRemove(STORAGE_KEYS.UI_LANGUAGE);
+      safeLocalStorageRemove(STORAGE_KEYS.THEME);
       window.history.replaceState(null, '', import.meta.env.BASE_URL);
     }
   }, []);
@@ -101,7 +99,7 @@ export default function App() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrolled = window.scrollY > 200;
+      const scrolled = window.scrollY > UI_CONFIG.SCROLL_THRESHOLD_PX;
       setHasScrolled(scrolled);
       if (scrolled && showFullFooter) {
         setShowFullFooter(false);
@@ -111,35 +109,49 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [showFullFooter]);
 
-  const uniqueChannels = [...new Set(allData.map(item => item.author.name))]
-    .sort((a, b) => a.localeCompare(b));
+  const uniqueChannels = useMemo(
+    () => [...new Set(allData.map(item => item.author.name))].sort((a, b) => a.localeCompare(b)),
+    [allData]
+  );
 
-  const uniquePeople = [...new Set(allData.flatMap(item => item.guests || []).filter(Boolean))]
-    .sort((a, b) => a.localeCompare(b));
+  const uniquePeople = useMemo(
+    () => [...new Set(allData.flatMap(item => item.guests || []).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
+    [allData]
+  );
 
-  const uniqueSeries = [...new Set(allData.map(i => i.series?.name).filter(Boolean))].sort();
+  const uniqueSeries = useMemo(
+    () => [...new Set(allData.map(i => i.series?.name).filter(Boolean))].sort(),
+    [allData]
+  );
 
-  const uniqueTopics = [...new Set(allData.flatMap(item => item.topics || []).filter(Boolean))]
-    .sort((a, b) => a.localeCompare(b));
+  const uniqueTopics = useMemo(
+    () => [...new Set(allData.flatMap(item => item.topics || []).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
+    [allData]
+  );
 
-  const uniqueLanguages = [...new Set(allData.map(item => item.language).filter(Boolean))]
-    .sort((a, b) => a.localeCompare(b));
+  const uniqueLanguages = useMemo(
+    () => [...new Set(allData.map(item => item.language).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
+    [allData]
+  );
 
-  const uniqueChannelsWithUrls = Array.from(
-    new Map(allData.map(item => [item.author.name, item.author.channelUrl])).entries()
-  ).map(([name, channelUrl]) => ({ name, channelUrl }))
-   .sort((a, b) => a.name.localeCompare(b.name));
+  const uniqueChannelsWithUrls = useMemo(
+    () => Array.from(
+      new Map(allData.map(item => [item.author.name, item.author.channelUrl])).entries()
+    ).map(([name, channelUrl]) => ({ name, channelUrl }))
+     .sort((a, b) => a.name.localeCompare(b.name)),
+    [allData]
+  );
 
-  const filteredMaterials = baseData.filter(item => {
+  const filteredMaterials = useMemo(() => baseData.filter(item => {
     if (activeChannel && item.author.name !== activeChannel) return false;
     if (activePerson && (!item.guests || !item.guests.includes(activePerson))) return false;
     if (activeTopic && (!item.topics || !item.topics.includes(activeTopic))) return false;
     if (activeSeries && item.series?.name !== activeSeries) return false;
     if (activeLanguage && item.language !== activeLanguage) return false;
     return true;
-  });
+  }), [baseData, activeChannel, activePerson, activeTopic, activeSeries, activeLanguage]);
 
-  const sortedMaterials = activeSort
+  const sortedMaterials = useMemo(() => activeSort
     ? [...filteredMaterials].sort((a, b) => {
         let cmp = 0;
         if (activeSort === 'author') cmp = a.author.name.localeCompare(b.author.name);
@@ -147,9 +159,14 @@ export default function App() {
         else if (activeSort === 'series') cmp = (a.series?.name ?? '').localeCompare(b.series?.name ?? '');
         return sortDirection === 'asc' ? cmp : -cmp;
       })
-    : filteredMaterials;
+    : filteredMaterials,
+    [filteredMaterials, activeSort, sortDirection]
+  );
 
-  const displayedMaterials = sortedMaterials.slice(0, visibleCount);
+  const displayedMaterials = useMemo(
+    () => sortedMaterials.slice(0, visibleCount),
+    [sortedMaterials, visibleCount]
+  );
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -164,7 +181,16 @@ export default function App() {
 
     return () => observer.disconnect();
   }, [visibleCount, sortedMaterials.length]);
-  const handleClearAll = () => { setActiveChannel(null); setActivePerson(null); setActiveTopic(null); setActiveSeries(null); setActiveLanguage(null); setActiveSort(null); setSortDirection('asc'); };
+
+  const handleClearAll = useCallback(() => {
+    setActiveChannel(null);
+    setActivePerson(null);
+    setActiveTopic(null);
+    setActiveSeries(null);
+    setActiveLanguage(null);
+    setActiveSort(null);
+    setSortDirection('asc');
+  }, []);
 
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '1200px', margin: '0 auto', color: theme.text }}>

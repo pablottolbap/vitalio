@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import Select from 'react-select';
 import { useLanguage } from '../i18n.jsx';
 import { useTheme, selectStyles } from '../theme.jsx';
@@ -195,3 +196,24 @@ export default function FilterPanel({
     </section>
   );
 }
+
+FilterPanel.propTypes = {
+  uniqueTopics: PropTypes.arrayOf(PropTypes.string).isRequired,
+  activeTopic: PropTypes.string,
+  setActiveTopic: PropTypes.func.isRequired,
+  uniqueChannels: PropTypes.arrayOf(PropTypes.string).isRequired,
+  activeChannel: PropTypes.string,
+  setActiveChannel: PropTypes.func.isRequired,
+  uniquePeople: PropTypes.arrayOf(PropTypes.string).isRequired,
+  activePerson: PropTypes.string,
+  setActivePerson: PropTypes.func.isRequired,
+  uniqueSeries: PropTypes.arrayOf(PropTypes.string).isRequired,
+  activeSeries: PropTypes.string,
+  setActiveSeries: PropTypes.func.isRequired,
+  uniqueLanguages: PropTypes.arrayOf(PropTypes.string).isRequired,
+  activeLanguage: PropTypes.string,
+  setActiveLanguage: PropTypes.func.isRequired,
+  getChannelDisplayName: PropTypes.func.isRequired,
+  getPersonDisplayName: PropTypes.func.isRequired,
+  onClearAll: PropTypes.func.isRequired,
+};

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useLanguage } from '../i18n.jsx';
 import { useTheme } from '../theme.jsx';
 
@@ -97,3 +98,16 @@ export default function StatsPanel({ allData, channels }) {
     </div>
   );
 }
+
+StatsPanel.propTypes = {
+  allData: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    language: PropTypes.string.isRequired,
+    guests: PropTypes.arrayOf(PropTypes.string),
+    topics: PropTypes.arrayOf(PropTypes.string),
+  })).isRequired,
+  channels: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    channelUrl: PropTypes.string.isRequired,
+  })).isRequired,
+};

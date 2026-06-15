@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { STORAGE_KEYS } from './constants.js';
+import { safeLocalStorageGet, safeLocalStorageSet } from './utils/storage.js';
 
 /* eslint-disable react-refresh/only-export-components */
 
@@ -43,8 +45,6 @@ export const themes = {
   },
 };
 
-const STORAGE_KEY = 'vitalio-theme';
-
 const ThemeContext = createContext({ theme: themes.light, isDark: false, toggleTheme: () => {} });
 
 /**
@@ -56,12 +56,12 @@ const ThemeContext = createContext({ theme: themes.light, isDark: false, toggleT
  */
 export function ThemeProvider({ children }) {
   const [mode, setMode] = useState(() => {
+    const saved = safeLocalStorageGet(STORAGE_KEYS.THEME, null);
+    if (saved === 'light' || saved === 'dark') return saved;
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved === 'light' || saved === 'dark') return saved;
       if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
     } catch {
-      // localStorage/matchMedia unavailable — use light theme as fallback
+      // matchMedia unavailable — use light theme as fallback
     }
     return 'light';
   });
@@ -71,11 +71,7 @@ export function ThemeProvider({ children }) {
   const toggleTheme = () => {
     setMode(prev => {
       const next = prev === 'dark' ? 'light' : 'dark';
-      try {
-        localStorage.setItem(STORAGE_KEY, next);
-      } catch {
-        // Silently ignore write errors (localStorage may be full or unavailable)
-      }
+      safeLocalStorageSet(STORAGE_KEYS.THEME, next);
       return next;
     });
   };
